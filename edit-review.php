@@ -14,7 +14,7 @@ $review_id = $_GET['review_id'];
 $review = getReviewById($review_id);
 
 
-if ($review['user_id'] !== $_SESSION['userId']) {
+if ((int)$review['user_id'] !== (int)$_SESSION['userId']) {
     echo "You do not have permission to edit this review.";
     exit();
 }
