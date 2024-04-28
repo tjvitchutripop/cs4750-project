@@ -48,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')   // GET
   <meta name="keywords" content="CS 3250, Upsorn, Praphamontripong, Software Testing">
   <link rel="icon" type="image/png" href="https://www.cs.virginia.edu/~up3f/cs4750/images/db-icon.png" />
   
-  <title>Maintenance Services</title>
+  <title>Literary Loop</title>
   <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">  
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">  
   <link rel="stylesheet" href="maintenance-system.css">  
@@ -132,7 +132,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')   // GET
       <div class="col-4 d-grid ">
       <input type="submit" value="Confirm update" id="cofmBtn" name="cofmBtn" class="btn btn-primary"
            title="Update a maintenance request" />      
-      <input type="hidden" value="<?= $_POST['reqId'] ?>" name="cofm_reqId" />      
+      <input type="hidden" value="<?= $_POST['isbn13'] ?>" name="cofm_reqId" />      
       <!-- Why need to attach this cofm_reqId? 
            Because of HTTP stateless property, $_POST['reqId'] is available to this request only. 
            To carry over the reqId to the next round of form submision, need to pass a token to the next request. 
@@ -151,28 +151,28 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')   // GET
 
 <hr/>
 <div class="container">
-<h3>List of requests</h3>
+<h3>Books</h3>
 <div class="row justify-content-center">  
 <table class="w3-table w3-bordered w3-card-4 center" style="width:100%">
   <thead>
   <tr style="background-color:#B0B0B0">
-    <th><b>ReqID</b></th>
-    <th><b>Date</b></th>        
-    <th><b>Room#</b></th> 
-    <th><b>By</b></th>
-    <th><b>Description</b></th>        
-    <th><b>Priority</b></th> 
+    <th><b>ISBN 13</b></th>
+    <th><b>Title</b></th>        
+    <th><b>Subtitle</b></th> 
+    <th><b>Description</b></th>
+    <th><b>Categories</b></th>        
+    <th><b>Rating</b></th> 
   </tr>
   </thead>
   <!-- iterate array of results, display the existing requests -->
   <?php foreach ($list_of_requests as $req_info): ?>
   <tr>
-     <td><?php echo $req_info['reqId']; ?></td>
-     <td><?php echo $req_info['reqDate']; ?></td>        
-     <td><?php echo $req_info['roomNumber']; ?></td>          
-     <td><?php echo $req_info['reqBy']; ?></td>
-     <td><?php echo $req_info['repairDesc']; ?></td>        
-     <td><?php echo $req_info['reqPriority']; ?></td>               
+     <td><?php echo $req_info['isbn13']; ?></td>
+     <td><?php echo $req_info['title']; ?></td>        
+     <td><?php echo $req_info['subtitle']; ?></td>          
+     <td><?php echo $req_info['Description']; ?></td>
+     <td><?php echo $req_info['Categories']; ?></td>        
+     <td><?php echo $req_info['Average_rating']; ?></td>               
      </td>
   </tr>
 <?php endforeach; ?>  
