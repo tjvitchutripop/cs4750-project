@@ -210,14 +210,16 @@ function getReadingList($user_id) {
    return $result;
 }
 
-
 function getUserReviews($user_id) {
    global $db;
-   $query = "SELECT r.*, b.Thumbnail, ra.number_of_stars
+   // Including user profile picture in the selection.
+   $query = "SELECT r.*, b.Thumbnail, ra.number_of_stars, u.profile_picture
              FROM Reviews AS r
              JOIN Books AS b ON r.isbn13 = b.isbn13
+             JOIN User AS u ON r.user_id = u.user_id
              LEFT JOIN Rates AS ra ON ra.isbn13 = b.isbn13 AND ra.user_id = r.user_id
-             WHERE r.user_id = :user_id"; 
+             WHERE r.user_id = :user_id
+             ORDER BY r.time_posted DESC"; // Ordering by most recent reviews first.
    
    $statement = $db->prepare($query);
    $statement->bindValue(':user_id', $user_id, PDO::PARAM_INT);
@@ -227,6 +229,7 @@ function getUserReviews($user_id) {
 
    return $result;
 }
+
 
 function addToReadingList($user_id, $isbn13) {
    global $db;
@@ -278,6 +281,45 @@ function removeFromReadingList($user_id, $isbn13) {
         error_log("Error removing book from reading list: $error_message");
     }
 }
+
+function addReview($userId, $isbn13, $rating, $reviewContent) {
+   global $db;
+   
+   $db->beginTransaction();
+   
+   try {
+       $review_id = mt_rand(100000, 999999);
+
+       // Insert review
+       $queryReview = "INSERT INTO Reviews (review_id, isbn13, user_id, likes, content, time_posted) VALUES (:review_id, :isbn13, :userId, :likes, :content, NOW())";
+       $statementReview = $db->prepare($queryReview);
+       $statementReview->bindValue(':review_id', $review_id);
+       $statementReview->bindValue(':isbn13', $isbn13);
+       $statementReview->bindValue(':userId', $userId);
+       $statementReview->bindValue(':likes', 55); 
+       $statementReview->bindValue(':content', $reviewContent);
+       $statementReview->execute();
+       $statementReview->closeCursor();
+
+       // Insert rating
+       if ($rating) {
+           $queryRating = "INSERT INTO Rates (user_id, isbn13, number_of_stars) VALUES (:userId, :isbn13, :rating) ON DUPLICATE KEY UPDATE number_of_stars = :rating";
+           $statementRating = $db->prepare($queryRating);
+           $statementRating->bindValue(':userId', $userId);
+           $statementRating->bindValue(':isbn13', $isbn13);
+           $statementRating->bindValue(':rating', $rating);
+           $statementRating->execute();
+           $statementRating->closeCursor();
+       }
+       $db->commit();
+   } catch (PDOException $e) {
+       $db->rollback();
+       $error_message = $e->getMessage();
+       error_log("Error posting review: $error_message");
+       throw $e;
+   }
+}
+
 
 
 ?>

@@ -47,7 +47,10 @@ if(isset($_POST['isbn13_to_add']) && isset($_SESSION['userId'])) {
         <p><?php echo $book["Description"]; ?></p>
         </div>
   </div>
-<h3 style="margin-top:20px;">Reviews</h3>
+
+<h3 style="margin-top:20px;">Reviews
+  <a href="review.php?isbn13=<?php echo htmlspecialchars($_GET["isbn13"]); ?>" class="btn btn-primary">+ Add Review</a>
+</h3>
 <?php foreach($reviews as $review) : ?>
     <div class="card shadow-sm" style="margin-top:10px;">
         <div class="card-body">

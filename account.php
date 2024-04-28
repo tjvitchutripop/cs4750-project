@@ -9,12 +9,14 @@ if (!isset($_SESSION['userId'])) {
     exit();
 }
 
+
 if(isset($_POST['isbn13_to_remove']) && isset($_SESSION['userId'])) {
     removeFromReadingList($_SESSION['userId'], $_POST['isbn13_to_remove']);
-    $readingList = getReadingList($_SESSION['userId']);
 }
+
 $readingList = getReadingList($_SESSION['userId']);
 $userReviews = getUserReviews($_SESSION['userId']);
+
 
 ?>
 <!DOCTYPE html>
@@ -24,7 +26,7 @@ $userReviews = getUserReviews($_SESSION['userId']);
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>LOGIN</title>
+  <title>ACCOUNT</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
   <link rel="stylesheet" href="styles/main.css">
@@ -67,25 +69,26 @@ $userReviews = getUserReviews($_SESSION['userId']);
         </section>
 
         <section id="reviews">
-            <h2>My Reviews</h2>
-            <div class="review-list">
-                <?php foreach ($userReviews as $review): ?>
-                    <div class="review">
-                        <img src="<?php echo htmlspecialchars($review['Thumbnail']); ?>" alt="Book Thumbnail">
-                        <div>
-                            <img src="<?php echo htmlspecialchars($review['profile_picture']); ?>" alt="User Icon">
-                            <span class="user-id"><?php echo htmlspecialchars($review['user_id']); ?></span>
-                        </div>
-                        <div>
-                            <span class="rating">Rating: <?php echo htmlspecialchars($review['number_of_stars']); ?> stars</span>
-                            <p><?php echo htmlspecialchars($review['content']); ?></p>
-                            <!-- Link to edit review -->
-                            <a href="edit-review.php?review_id=<?php echo $review['review_id']; ?>">Edit Review</a>
-                        </div>
-                    </div>
-                <?php endforeach; ?>
+    <h2>My Reviews</h2>
+    <div class="review-list">
+        <?php foreach ($userReviews as $review): ?>
+            <div class="review">
+                <img src="<?php echo htmlspecialchars($review['Thumbnail']); ?>" alt="Book Thumbnail" style="width:100px; height:150px;">
+                <div>
+                    <!-- Displaying the user profile picture if it exists -->
+                    <img src="<?php echo htmlspecialchars($review['profile_picture'] ?? 'path/to/default/icon.png'); ?>" alt="User Icon" style="width:50px; height:50px;">
+                    <span class="user-id"><?php echo htmlspecialchars($review['user_id']); ?></span>
+                </div>
+                <div>
+                    <span class="rating">Rating: <?php echo htmlspecialchars($review['number_of_stars'] ?? 'Not rated'); ?> stars</span>
+                    <p><?php echo htmlspecialchars($review['content']); ?></p>
+                    <!-- Link to edit review -->
+                    <a href="edit-review.php?review_id=<?php echo $review['review_id']; ?>">Edit Review</a>
+                </div>
             </div>
-        </section>
+        <?php endforeach; ?>
+    </div>
+</section>
 </main>
 </body>
 </html>
