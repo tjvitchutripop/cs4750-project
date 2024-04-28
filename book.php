@@ -23,6 +23,12 @@ $reviews = getReviews($_GET["isbn13"]);
 
 <body>  
 <?php include("header.php"); ?>
+<!-- sample add button, need to modify -->
+<form action="book.php?isbn13=<?php echo htmlspecialchars($_GET["isbn13"]); ?>" method="post">
+    <input type="hidden" name="isbn13_to_add" value="<?php echo htmlspecialchars($_GET["isbn13"]); ?>">
+    <button type="submit" class="btn btn-primary">Add to Reading List</button>
+</form>
+<!-- sample add button -->
 <div style="margin-left: 80px;margin-right: 80px;margin-top: 40px;">
 <div class="row">
     <div class="col-sm-3">
