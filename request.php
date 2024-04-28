@@ -65,19 +65,45 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')   // GET
       <div style="display:flex;">
         <label for="sort" style="margin-top:5px;">Sort by:</label>
         <select class="form-select" style="width: 200px; margin-left:10px; margin-right:5px;" name="sort" id="sort">
-            <option value="title_asc">Title 0-9, A-Z</option>
+          <option value="title_asc" <?php echo ($_GET['sort'] ?? '') === 'title_asc' ? 'selected' : ''; ?>>Title (0-9, A-Z)</option>
+          <option value="rating_asc" <?php echo ($_GET['sort'] ?? '') === 'rating_asc' ? 'selected' : ''; ?>>Rating (Low to High)</option>
+          <option value="rating_desc" <?php echo ($_GET['sort'] ?? '') === 'rating_desc' ? 'selected' : ''; ?>>Rating (High to Low)</option>
         </select>
         <button class="btn btn-primary btn-sm" type="submit">Sort</button>
       </div>
   </form>
   <div class="row justify-content-center">  
-    <?php 
-      // Sort the list of requests if the form is submitted
-      if (isset($_GET['sort']) && $_GET['sort'] === 'title_asc') {
+  <?php 
+  // Sort the list of requests if the form is submitted
+  if (isset($_GET['sort'])) {
+    $sort_option = $_GET['sort'];
+    switch ($sort_option) {
+      case 'title_asc':
+        // Sort by title A-Z
         usort($list_of_requests, function($a, $b) {
           return strcmp($a['title'], $b['title']);
         });
-      }
+        break;
+      case 'rating_asc':
+        // Sort by rating Low to High
+        usort($list_of_requests, function($a, $b) {
+          return ($a['Average_rating'] < $b['Average_rating']) ? -1 : 1;
+        });
+        break;
+      case 'rating_desc':
+        // Sort by rating High to Low
+        usort($list_of_requests, function($a, $b) {
+          return ($a['Average_rating'] < $b['Average_rating']) ? 1 : -1;
+        });
+        break;
+      default:
+        // Default sorting if invalid option is selected
+        usort($list_of_requests, function($a, $b) {
+          return strcmp($a['title'], $b['title']);
+        });
+        break;
+  }
+}
       // Display sorted or original list of requests
       foreach ($list_of_requests as $req_info): ?>
       <div class="col-md-2">
