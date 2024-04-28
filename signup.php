@@ -1,3 +1,20 @@
+<?php
+require("connect-db.php");
+require("request-db.php");
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    if (!filter_var($_POST['userId'], FILTER_VALIDATE_INT)) {
+        echo "User ID must be a number.";
+    } elseif ($_POST['password'] !== $_POST['confirm_password']) {
+        echo "Passwords do not match.";
+    } else {
+        addUser($_POST['first_name'], $_POST['last_name'], $_POST['userId'], $_POST['password']);
+        header("Location: success.php");
+        exit();
+    }
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -51,7 +68,7 @@
       <div class="info-box">
         
       
-        <form action="request.php" method="POST">
+        <form action="signup.php" method="POST">
           <div class="form-group  col-12">
             <label for="first_name">First name</label>
             <input type="text" class="form-control" name="first_name" placeholder="First name" required> 
@@ -61,12 +78,12 @@
             <input type="text" class="form-control" name="last_name" placeholder="Last name" required> 
           </div>
           <div class="form-group">
-            <label for="userID">User ID</label>
-            <input type="userID" class="form-control" name="userID" placeholder="User ID" required> 
+            <label for="userId">User ID</label>
+            <input type="userId" class="form-control" name="userId" placeholder="User ID" required> 
           </div>
           <div class="form-group">
             <label for="password">Password</label>
-            <input type="password" class="form-control" name="password" placeholder="Password" required> 
+            <input type="password" class="form-control" name="password" placeholdaer="Password" required> 
           </div>
           <div class="form-group">
             <label for="confirm_password">Confirm Password</label>
