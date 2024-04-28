@@ -138,4 +138,61 @@ function deleteRequest($reqId)
     
 }
 
+function addUser($firstName, $lastName, $userId, $password) {
+   global $db;
+   $query = "INSERT INTO User (user_id, user_password, profile_picture, first_name, last_name) 
+   VALUES (:userId, :password, 'profile_ex.jpg', :firstName, :lastName)";  
+   
+   try {
+      $statement = $db->prepare($query);
+
+      $statement->bindValue(':userId', $userId, PDO::PARAM_INT); 
+      // $statement->bindValue(':password', password_hash($password, PASSWORD_DEFAULT)); 
+      $statement->bindValue(':password', $password);
+      $statement->bindValue(':firstName', $firstName);
+      $statement->bindValue(':lastName', $lastName);
+
+      $statement->execute();
+      $statement->closeCursor();
+   } catch (PDOException $e) {
+      $error_message = $e->getMessage();
+      echo "<p>Error inserting user into database: $error_message </p>";
+   }
+}
+
+function validateUser($userId, $password) {
+   global $db;
+   $query = "SELECT user_password FROM User WHERE user_id = :userId";
+   
+   try {
+       $statement = $db->prepare($query);
+       $userId = (int)$userId;
+       $statement->bindValue(':userId', $userId, PDO::PARAM_INT);
+       $statement->execute();
+       
+       $row = $statement->fetch();
+       $statement->closeCursor();
+       
+       if ($row) {
+           if ($password === $row['user_password']) { 
+
+               return true;
+           } else {
+               error_log("Password mismatch for user ID: {$userId}");
+               return false;
+           }
+       } else {
+           error_log("No user found with ID: {$userId}");
+           return false;
+       }
+   } catch (PDOException $e) {
+       error_log("PDOException in validateUser(): " . $e->getMessage());
+       return false;
+   }
+}
+
+
+
+
+
 ?>

@@ -1,4 +1,5 @@
 <?php 
+
 require("connect-db.php");    // include("connect-db.php");
 require("request-db.php");
 ?>
@@ -149,37 +150,69 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')   // GET
 </div>
 
 
+</div>
+
+
+
+</div>
+
 <hr/>
 <div class="container">
-<h3>Books</h3>
-<div class="row justify-content-center">  
-<table class="w3-table w3-bordered w3-card-4 center" style="width:100%">
-  <thead>
-  <tr style="background-color:#B0B0B0">
-    <th><b>ISBN 13</b></th>
-    <th><b>Title</b></th>        
-    <th><b>Subtitle</b></th> 
-    <th><b>Description</b></th>
-    <th><b>Categories</b></th>        
-    <th><b>Rating</b></th> 
-  </tr>
-  </thead>
-  <!-- iterate array of results, display the existing requests -->
-  <?php foreach ($list_of_requests as $req_info): ?>
-  <tr>
-     <td><?php echo $req_info['isbn13']; ?></td>
-     <td><?php echo $req_info['title']; ?></td>        
-     <td><?php echo $req_info['subtitle']; ?></td>          
-     <td><?php echo $req_info['Description']; ?></td>
-     <td><?php echo $req_info['Categories']; ?></td>        
-     <td><?php echo $req_info['Average_rating']; ?></td>               
-     </td>
-  </tr>
-<?php endforeach; ?>  
-
-</table>
+  <h3>Books</h3>
+  <form action="" method="GET">
+      <label for="sort">Sort by:</label>
+      <select name="sort" id="sort">
+          <option value="title_asc">Title 0-9, A-Z</option>
+      </select>
+      <button type="submit">Sort</button>
+  </form>
+  <div class="row justify-content-center">  
+    <?php 
+      // Sort the list of requests if the form is submitted
+      if (isset($_GET['sort']) && $_GET['sort'] === 'title_asc') {
+        usort($list_of_requests, function($a, $b) {
+          return strcmp($a['title'], $b['title']);
+        });
+      }
+      // Display sorted or original list of requests
+      foreach ($list_of_requests as $req_info): ?>
+      <div class="col-md-2">
+        <div class="book">
+          <img src="<?php echo $req_info['Thumbnail']; ?>" alt="Thumbnail">
+          <p class="title"><?php echo $req_info['title']; ?></p>
+        </div>
+      </div>
+    <?php endforeach; ?>  
+  </div>   
 </div>   
 
+<style>
+.container {
+    margin-top: 20px;
+}
+
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.book {
+    text-align: center;
+    margin: 10px;
+}
+
+.book img {
+    width: 150px; /* Adjust size as needed */
+    height: 200px; /* Adjust size as needed */
+    object-fit: cover; /* Ensure the image fills the designated space */
+}
+
+.title {
+    margin-top: 10px;
+    font-weight: bold;
+}
+</style>
 
 <br/><br/>
 
