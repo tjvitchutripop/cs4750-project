@@ -1,4 +1,5 @@
 <?php 
+session_start(); 
 
 require("connect-db.php");    // include("connect-db.php");
 require("request-db.php");
@@ -178,8 +179,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')   // GET
       foreach ($list_of_requests as $req_info): ?>
       <div class="col-md-2">
         <div class="book">
-          <img src="<?php echo $req_info['Thumbnail']; ?>" alt="Thumbnail">
-          <p class="title"><?php echo $req_info['title']; ?></p>
+          <a href="book.php?isbn13=<?php echo urlencode($req_info['isbn13']); ?>" style="text-decoration: none; color: inherit;">
+              <img src="<?php echo htmlspecialchars($req_info['Thumbnail']); ?>" alt="Thumbnail">
+              <p class="title"><?php echo htmlspecialchars($req_info['title']); ?></p>
+          </a>
         </div>
       </div>
     <?php endforeach; ?>  

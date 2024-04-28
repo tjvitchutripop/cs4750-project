@@ -1,4 +1,11 @@
-<?php session_start(); ?>
+<?php 
+session_start(); 
+if (!isset($_SESSION['userId'])) {
+  $userDisplay = "Log In / Sign up";
+} else {
+  $userDisplay = "Account (" . $_SESSION['userId'] . ")"; // Display user ID for verification
+}
+?>
 
 <header>  
   <nav class="navbar navbar-expand-md navbar-dark bg-dark">
@@ -17,11 +24,24 @@
             </li>              
           <?php  } else { ?>                    
             <li class="nav-item">                  
-              <a class="nav-link" href="account.php">Account</a>
+              <a class="nav-link" href="account.php"> <?php echo $userDisplay; ?></a>
             </li>
           <?php } ?>
+        </ul>
+      </div>
+    </div>
+  </nav>
+</header>    
+
         
-          
+<!-- for testing purpose, set this, will delete this -->
+          <!-- <li class="nav-item">
+              <a class="nav-link" href="login.php">TEST: Log In / Sign up</a>
+            </li>   
+            
+            <li class="nav-item">                  
+              <a class="nav-link" href="account.php">TEST: Account</a>
+            </li> -->
         </ul>
       </div>
     </div>

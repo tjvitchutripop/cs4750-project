@@ -1,4 +1,5 @@
 <?php
+//https://docs.google.com/document/d/1O5voZDdHTsqQdEx9bH-GcTt6h2XGVAGCPLXOHSPW0Vc/edit
 function addRequests($reqDate, $roomNumber, $reqBy, $repairDesc, $reqPriority)
 {
    global $db;   
@@ -87,16 +88,16 @@ function getReviews($isbn13)
    return $result;
 }
 
-{
-   global $db;
-   $query = "select * from Books";    
-   $statement = $db->prepare($query);    // compile
-   $statement->execute();
-   $result = $statement->fetchAll();     // fetch()
-   $statement->closeCursor();
+// {
+//    global $db;
+//    $query = "select * from Books";    
+//    $statement = $db->prepare($query);    // compile
+//    $statement->execute();
+//    $result = $statement->fetchAll();     // fetch()
+//    $statement->closeCursor();
 
-   return $result;
-}
+//    return $result;
+// }
 
 function getRequestById($id)  
 {
@@ -190,7 +191,42 @@ function validateUser($userId, $password) {
        return false;
    }
 }
+function getReadingList($user_id) {
+   global $db;
+   // Corrected the table name from Reading_list_books to Reading_list_isbn13
+   $query = "SELECT b.* 
+             FROM Books AS b 
+             JOIN Reading_list_isbn13 AS rli ON b.isbn13 = rli.isbn13 
+             JOIN Reading_list AS rl ON rli.reading_list_id = rl.reading_list_id 
+             JOIN Creates AS c ON rl.reading_list_id = c.reading_list_id 
+             WHERE c.user_id = :user_id"; 
+   
+   $statement = $db->prepare($query);
+   $statement->bindValue(':user_id', $user_id, PDO::PARAM_INT);
+   $statement->execute();
+   $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+   $statement->closeCursor();
 
+   return $result;
+}
+
+
+function getUserReviews($user_id) {
+   global $db;
+   $query = "SELECT r.*, b.Thumbnail, ra.number_of_stars
+             FROM Reviews AS r
+             JOIN Books AS b ON r.isbn13 = b.isbn13
+             LEFT JOIN Rates AS ra ON ra.isbn13 = b.isbn13 AND ra.user_id = r.user_id
+             WHERE r.user_id = :user_id"; 
+   
+   $statement = $db->prepare($query);
+   $statement->bindValue(':user_id', $user_id, PDO::PARAM_INT);
+   $statement->execute();
+   $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+   $statement->closeCursor();
+
+   return $result;
+}
 
 
 
