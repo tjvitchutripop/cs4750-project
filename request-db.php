@@ -192,9 +192,9 @@ function validateUser($userId, $password) {
        return false;
    }
 }
-function getReadingList($user_id) {
+function getReadingLists($user_id) {
    global $db;
-   $query = "SELECT b.* 
+   $query = "SELECT b.*, rl.reading_list_id, rl.reading_list_title
              FROM Books AS b 
              JOIN Reading_list_isbn13 AS rli ON b.isbn13 = rli.isbn13 
              JOIN Reading_list AS rl ON rli.reading_list_id = rl.reading_list_id 
@@ -205,6 +205,45 @@ function getReadingList($user_id) {
    $statement->bindValue(':user_id', $user_id, PDO::PARAM_INT);
    $statement->execute();
    $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+   $statement->closeCursor();
+
+   // Organize books by reading list
+   $readingLists = array();
+   foreach ($result as $book) {
+       $readingListId = $book['reading_list_id'];
+       $readingListTitle = $book['reading_list_title'];
+       if (!isset($readingLists[$readingListId])) {
+           $readingLists[$readingListId] = array(
+               'reading_list_id' => $readingListId,
+               'reading_list_title' => $readingListTitle,
+               'books' => array()
+           );
+       }
+       $readingLists[$readingListId]['books'][] = $book;
+   }
+
+   return $readingLists;
+}
+
+function getReadingListID_Title($user_id) {
+   global $db;
+   $query = "SELECT reading_list_id, reading_list_title FROM Creates NATURAL JOIN Reading_list WHERE user_id = :user_id";
+   $statement = $db->prepare($query);
+   $statement->bindValue(':user_id', $user_id, PDO::PARAM_INT);
+   $statement->execute();
+   $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+   $statement->closeCursor();
+
+   return $result;
+}
+
+function getUserName($user_id) {
+   global $db;
+   $query = "SELECT first_name, last_name FROM User WHERE user_id = :user_id";
+   $statement = $db->prepare($query);
+   $statement->bindValue(':user_id', $user_id, PDO::PARAM_INT);
+   $statement->execute();
+   $result = $statement->fetch(PDO::FETCH_ASSOC);
    $statement->closeCursor();
 
    return $result;
@@ -231,31 +270,32 @@ function getUserReviews($user_id) {
 }
 
 
-function addToReadingList($user_id, $isbn13) {
+function addToReadingList($user_id, $isbn13, $reading_list_id) {
    global $db;
 
-   $queryCheck = "SELECT reading_list_id FROM Creates WHERE user_id = :user_id LIMIT 1";
+   $queryCheck = "SELECT reading_list_id FROM Creates WHERE user_id = :user_id AND reading_list_id = :reading_list_id";
    $statementCheck = $db->prepare($queryCheck);
    $statementCheck->bindValue(':user_id', $user_id);
+   $statementCheck->bindValue(':reading_list_id', $reading_list_id);
    $statementCheck->execute();
    $readingList = $statementCheck->fetch();
    $statementCheck->closeCursor();
 
-   if (!$readingList) {
+   // if (!$readingList) {
 
-       $queryInsertReadingList = "INSERT INTO Reading_list (reading_list_id, reading_list_title) VALUES (:user_id, 'Default Reading List')";
-       $statementInsertReadingList = $db->prepare($queryInsertReadingList);
-       $statementInsertReadingList->bindValue(':user_id', $user_id);
-       $statementInsertReadingList->execute();
-       $statementInsertReadingList->closeCursor();
+   //     $queryInsertReadingList = "INSERT INTO Reading_list (reading_list_id, reading_list_title) VALUES (:user_id, 'Default Reading List')";
+   //     $statementInsertReadingList = $db->prepare($queryInsertReadingList);
+   //     $statementInsertReadingList->bindValue(':user_id', $user_id);
+   //     $statementInsertReadingList->execute();
+   //     $statementInsertReadingList->closeCursor();
 
-       $queryCreate = "INSERT INTO Creates (user_id, reading_list_id) VALUES (:user_id, :user_id)";
-       $statementCreate = $db->prepare($queryCreate);
-       $statementCreate->bindValue(':user_id', $user_id);
-       $statementCreate->execute();
-       $statementCreate->closeCursor();
-       $readingList['reading_list_id'] = $user_id;
-   }
+   //     $queryCreate = "INSERT INTO Creates (user_id, reading_list_id) VALUES (:user_id, :user_id)";
+   //     $statementCreate = $db->prepare($queryCreate);
+   //     $statementCreate->bindValue(':user_id', $user_id);
+   //     $statementCreate->execute();
+   //     $statementCreate->closeCursor();
+   //     $readingList['reading_list_id'] = $user_id;
+   // }
 
    // Add the book to the user's reading list
    $queryInsert = "INSERT INTO Reading_list_isbn13 (reading_list_id, isbn13) VALUES (:reading_list_id, :isbn13) ON DUPLICATE KEY UPDATE isbn13=isbn13";
@@ -266,13 +306,13 @@ function addToReadingList($user_id, $isbn13) {
    $statementInsert->closeCursor();
 }
 
-function removeFromReadingList($user_id, $isbn13) {
+function removeFromReadingList($user_id, $isbn13, $reading_list_id) {
     global $db;
     $query = "DELETE FROM Reading_list_isbn13 WHERE reading_list_id = :reading_list_id AND isbn13 = :isbn13";
 
     try {
         $statement = $db->prepare($query);
-        $statement->bindValue(':reading_list_id', $user_id);
+        $statement->bindValue(':reading_list_id', $reading_list_id);
         $statement->bindValue(':isbn13', $isbn13);
         $statement->execute();
         $statement->closeCursor();
@@ -296,7 +336,7 @@ function addReview($userId, $isbn13, $rating, $reviewContent) {
        $statementReview->bindValue(':review_id', $review_id);
        $statementReview->bindValue(':isbn13', $isbn13);
        $statementReview->bindValue(':userId', $userId);
-       $statementReview->bindValue(':likes', 55); 
+       $statementReview->bindValue(':likes', 0); 
        $statementReview->bindValue(':content', $reviewContent);
        $statementReview->execute();
        $statementReview->closeCursor();

@@ -9,9 +9,10 @@ require("request-db.php");
 $book = getBook($_GET["isbn13"]);
 $authors = getAuthors($_GET["isbn13"]);
 $reviews = getReviews($_GET["isbn13"]);
-if(isset($_POST['isbn13_to_add']) && isset($_SESSION['userId'])) {
+$reading_lists = getReadingListID_Title($_SESSION['userId']);
+if(isset($_POST['isbn13_to_add']) && isset($_SESSION['userId']) && isset($_POST['reading_list_id'])) {
     // Function to add book to reading list needs to be implemented in request-db.php
-    addToReadingList($_SESSION['userId'], $_POST['isbn13_to_add']);
+    addToReadingList($_SESSION['userId'], $_POST['isbn13_to_add'], $_POST['reading_list_id']);
 }
 
 ?>
@@ -19,24 +20,35 @@ if(isset($_POST['isbn13_to_add']) && isset($_SESSION['userId'])) {
 <!DOCTYPE html>
 <html>
     <head>
-    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">  
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">  
-    <link rel="stylesheet" href="maintenance-system.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://getbootstrap.com/docs/5.3/assets/css/docs.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     </head>
 
 <body>  
 <?php include("header.php"); ?>
 <!-- sample add button, need to modify -->
-<form action="book.php?isbn13=<?php echo htmlspecialchars($_GET["isbn13"]); ?>" method="post">
-    <input type="hidden" name="isbn13_to_add" value="<?php echo htmlspecialchars($_GET["isbn13"]); ?>">
-    <button type="submit" class="btn btn-primary">Add to Reading List</button>
-</form>
 <!-- sample add button -->
-<div style="margin-left: 80px;margin-right: 80px;margin-top: 40px;">
+<div style="margin-left: 80px;margin-right: 80px;margin-top: 80px;">
 <div class="row">
     <div class="col-sm-3">
         <img src="<?php echo $book["Thumbnail"]; ?>" style="width:15vw;"></img>
+        <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" style="margin-top:10px;" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                Add to Reading List
+            </button>
+            <ul class="dropdown-menu">
+                <?php foreach($reading_lists as $reading_list) : ?>
+                    <li>
+                    <form action="book.php?isbn13=<?php echo htmlspecialchars($_GET["isbn13"]); ?>&&reading_list_id=<?php echo $reading_list['reading_list_id']; ?>" method="post">
+                        <input type="hidden" name="isbn13_to_add" value="<?php echo htmlspecialchars($_GET["isbn13"]); ?>">
+                        <input type="hidden" name="reading_list_id" value="<?php echo $reading_list['reading_list_id']; ?>">
+                        <button type="submit" class="dropdown-item"><?php echo $reading_list['reading_list_title']; ?></button>
+                    </form>
+                <?php endforeach; ?>
+            </ul>
+        </div>
     </div>
     <div class="col-sm-8">
         <h1><?php echo $book["title"]; ?></h1>

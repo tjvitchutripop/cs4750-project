@@ -58,114 +58,17 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')   // GET
 
 <body>  
 <?php include("header.php"); ?>
-
-<div class="container">
-  <div class="row g-3 mt-2">
-    <div class="col">
-      <h2>Literary Loop</h2>
-    </div>  
-  </div>
-  
-  <!---------------->
-
-  <form method="post" action="<?php $_SERVER['PHP_SELF'] ?>" onsubmit="return validateInput()">
-    <table style="width:98%">
-      <tr>
-        <td width="50%">
-          <div class='mb-3'>
-            Requested date:
-            <input type='text' class='form-control' 
-                   id='requestedDate' name='requestedDate' 
-                   placeholder='Format: yyyy-mm-dd' 
-                   pattern="\d{4}-\d{1,2}-\d{1,2}" 
-                   value="<?php if ($request_to_update != null) echo $request_to_update['reqDate'] ?>" />
-          </div>
-        </td>
-        <td>
-          <div class='mb-3'>
-            Room Number:
-            <input type='text' class='form-control' id='roomNo' name='roomNo' 
-            value="<?php if ($request_to_update != null) echo $request_to_update['roomNumber'] ?>" />
-          </div>
-        </td>
-      </tr>
-      <tr>
-        <td colspan=2>
-          <div class='mb-3'>
-            Requested by: 
-            <input type='text' class='form-control' id='requestedBy' name='requestedBy'
-                   placeholder='Enter your name'
-                   value="<?php if ($request_to_update != null) echo $request_to_update['reqBy'] ?>" />
-          </div>
-        </td>
-      </tr>
-      <tr>
-        <td colspan=2>
-          <div class="mb-3">
-            Description of work/repair:
-            <input type='text' class='form-control' id='requestDesc' name='requestDesc'
-            value="<?php if ($request_to_update != null) echo $request_to_update['repairDesc'] ?>" />
-        </div>
-        </td>
-      </tr>
-      <tr>
-        <td colspan=2>
-          <div class='mb-3'>
-            Requested Priority:
-            <select class='form-select' id='priority_option' name='priority_option'>
-              <option selected></option>
-              <option value='high' <?php if ($request_to_update!=null && $request_to_update['reqPriority']=='high') echo ' selected="selected"' ?> >
-                High - Must be done within 24 hours</option>
-              <option value='medium' <?php if ($request_to_update!=null && $request_to_update['reqPriority']=='medium') echo ' selected="selected"' ?> >
-                Medium - Within a week</option>
-              <option value='low' <?php if ($request_to_update!=null && $request_to_update['reqPriority']=='low') echo ' selected="selected"' ?> >
-                Low - When you get a chance</option>
-            </select>
-          </div>
-        </td>
-      </tr>
-    </table>
-
-    <div class="row g-3 mx-auto">    
-      <div class="col-4 d-grid ">
-      <input type="submit" value="Add" id="addBtn" name="addBtn" class="btn btn-dark"
-           title="Submit a maintenance request" />                  
-      </div>	    
-      <div class="col-4 d-grid ">
-      <input type="submit" value="Confirm update" id="cofmBtn" name="cofmBtn" class="btn btn-primary"
-           title="Update a maintenance request" />      
-      <input type="hidden" value="<?= $_POST['isbn13'] ?>" name="cofm_reqId" />      
-      <!-- Why need to attach this cofm_reqId? 
-           Because of HTTP stateless property, $_POST['reqId'] is available to this request only. 
-           To carry over the reqId to the next round of form submision, need to pass a token to the next request. 
-      -->
-      </div>	    
-      <div class="col-4 d-grid">
-        <input type="reset" value="Clear form" name="clearBtn" id="clearBtn" class="btn btn-secondary" />
-      </div>      
-    </div>  
-    <div>
-  </div>  
-</form>
-
-</div>
-
-
-</div>
-
-
-
-</div>
-
 <hr/>
 <div class="container">
-  <h3>Books</h3>
+  <h3>Explore a universe of books 🌌</h3>
   <form action="" method="GET">
-      <label for="sort">Sort by:</label>
-      <select name="sort" id="sort">
-          <option value="title_asc">Title 0-9, A-Z</option>
-      </select>
-      <button type="submit">Sort</button>
+      <div style="display:flex;">
+        <label for="sort" style="margin-top:5px;">Sort by:</label>
+        <select class="form-select" style="width: 200px; margin-left:10px; margin-right:5px;" name="sort" id="sort">
+            <option value="title_asc">Title 0-9, A-Z</option>
+        </select>
+        <button class="btn btn-primary btn-sm" type="submit">Sort</button>
+      </div>
   </form>
   <div class="row justify-content-center">  
     <?php 
@@ -180,7 +83,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')   // GET
       <div class="col-md-2">
         <div class="book">
           <a href="book.php?isbn13=<?php echo urlencode($req_info['isbn13']); ?>" style="text-decoration: none; color: inherit;">
-              <img src="<?php echo htmlspecialchars($req_info['Thumbnail']); ?>" alt="Thumbnail">
+              <img class="card shadow-md" src="<?php echo htmlspecialchars($req_info['Thumbnail']); ?>" alt="Thumbnail">
               <p class="title"><?php echo htmlspecialchars($req_info['title']); ?></p>
           </a>
         </div>
@@ -191,7 +94,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')   // GET
 
 <style>
 .container {
-    margin-top: 20px;
+    margin-top: 50px;
 }
 
 .row {
