@@ -163,9 +163,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')   // GET
   <form action="" method="GET">
       <label for="sort">Sort by:</label>
       <select name="sort" id="sort">
-          <option value="title_asc">Title (0-9, A-Z)</option>
-          <option value="rating_asc">Rating (Low to High)</option>
-          <option value="rating_desc">Rating (High to Low)</option>
+        <option value="title_asc" <?php echo ($_GET['sort'] ?? '') === 'title_asc' ? 'selected' : ''; ?>>Title (0-9, A-Z)</option>
+        <option value="rating_asc" <?php echo ($_GET['sort'] ?? '') === 'rating_asc' ? 'selected' : ''; ?>>Rating (Low to High)</option>
+        <option value="rating_desc" <?php echo ($_GET['sort'] ?? '') === 'rating_desc' ? 'selected' : ''; ?>>Rating (High to Low)</option>
       </select>
       <button type="submit">Sort</button>
   </form>
