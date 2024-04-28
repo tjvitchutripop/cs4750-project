@@ -62,8 +62,9 @@ $userReviews = getUserReviews($_SESSION['userId']);
             <div class="book-list">
             <?php foreach ($readingList as $book): ?>
                 <div class="book">
-                    <img src="<?php echo htmlspecialchars($book['Thumbnail']); ?>" alt="Book Thumbnail">
-                    <p><?php echo htmlspecialchars($book['title']); ?></p>
+                    <a href="book.php?isbn13=<?php echo htmlspecialchars($book['isbn13']); ?>">
+                        <img src="<?php echo htmlspecialchars($book['Thumbnail']); ?>" alt="Book Thumbnail">
+                    </a>                    <p><?php echo htmlspecialchars($book['title']); ?></p>
                     <!-- Delete form -->
                     <form action="account.php" method="post">
                         <input type="hidden" name="isbn13_to_remove" value="<?php echo htmlspecialchars($book['isbn13']); ?>">
@@ -79,6 +80,7 @@ $userReviews = getUserReviews($_SESSION['userId']);
     <div class="review-list">
         <?php foreach ($userReviews as $review): ?>
             <div class="review">
+                
                 <img src="<?php echo htmlspecialchars($review['Thumbnail']); ?>" alt="Book Thumbnail" style="width:100px; height:150px;">
                 <div>
                     <!-- Displaying the user profile picture if it exists -->
