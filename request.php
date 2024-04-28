@@ -163,18 +163,44 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')   // GET
   <form action="" method="GET">
       <label for="sort">Sort by:</label>
       <select name="sort" id="sort">
-          <option value="title_asc">Title 0-9, A-Z</option>
+          <option value="title_asc">Title (0-9, A-Z)</option>
+          <option value="rating_asc">Rating (Low to High)</option>
+          <option value="rating_desc">Rating (High to Low)</option>
       </select>
       <button type="submit">Sort</button>
   </form>
   <div class="row justify-content-center">  
-    <?php 
-      // Sort the list of requests if the form is submitted
-      if (isset($_GET['sort']) && $_GET['sort'] === 'title_asc') {
+  <?php 
+  // Sort the list of requests if the form is submitted
+  if (isset($_GET['sort'])) {
+    $sort_option = $_GET['sort'];
+    switch ($sort_option) {
+      case 'title_asc':
+        // Sort by title A-Z
         usort($list_of_requests, function($a, $b) {
           return strcmp($a['title'], $b['title']);
         });
-      }
+        break;
+      case 'rating_asc':
+        // Sort by rating Low to High
+        usort($list_of_requests, function($a, $b) {
+          return ($a['Average_rating'] < $b['Average_rating']) ? -1 : 1;
+        });
+        break;
+      case 'rating_desc':
+        // Sort by rating High to Low
+        usort($list_of_requests, function($a, $b) {
+          return ($a['Average_rating'] < $b['Average_rating']) ? 1 : -1;
+        });
+        break;
+      default:
+        // Default sorting if invalid option is selected
+        usort($list_of_requests, function($a, $b) {
+          return strcmp($a['title'], $b['title']);
+        });
+        break;
+  }
+}
       // Display sorted or original list of requests
       foreach ($list_of_requests as $req_info): ?>
       <div class="col-md-2">
