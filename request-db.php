@@ -48,6 +48,56 @@ function getAllRequests()
    return $result;
 }
 
+function getBook($isbn13)  
+{
+   global $db;
+   $query = "select * from Books where isbn13=:isbn13"; 
+   $statement = $db->prepare($query);    // compile
+   $statement->bindValue(':isbn13', $isbn13);
+   $statement->execute();
+   $result = $statement->fetch();
+   $statement->closeCursor();
+
+   return $result;
+}
+
+function getAuthors($isbn13)
+{
+   global $db;
+   $query = "select author_name from Books_authors where isbn13=:isbn13"; 
+   $statement = $db->prepare($query);    // compile
+   $statement->bindValue(':isbn13', $isbn13);
+   $statement->execute();
+   $result = $statement->fetchAll();
+   $statement->closeCursor();
+
+   return $result;
+}
+
+function getReviews($isbn13)
+{
+   global $db;
+   $query = "select * from Reviews natural join User where isbn13=:isbn13"; 
+   $statement = $db->prepare($query);    // compile
+   $statement->bindValue(':isbn13', $isbn13);
+   $statement->execute();
+   $result = $statement->fetchAll();
+   $statement->closeCursor();
+
+   return $result;
+}
+
+{
+   global $db;
+   $query = "select * from Books";    
+   $statement = $db->prepare($query);    // compile
+   $statement->execute();
+   $result = $statement->fetchAll();     // fetch()
+   $statement->closeCursor();
+
+   return $result;
+}
+
 function getRequestById($id)  
 {
    global $db;
