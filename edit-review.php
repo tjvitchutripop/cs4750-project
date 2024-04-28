@@ -4,7 +4,6 @@ session_start();
 require("connect-db.php");
 require("request-db.php");
 
-// Redirect if not logged in or if no review ID is provided.
 if (!isset($_SESSION['userId']) || !isset($_GET['review_id'])) {
     header("Location: login.php");
     exit();
@@ -19,14 +18,11 @@ if ((int)$review['user_id'] !== (int)$_SESSION['userId']) {
     exit();
 }
 
-// Check for form submission
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $rating = $_POST['rating'];
     $reviewContent = $_POST['reviewContent'];
 
     updateReview($review_id, $_SESSION['userId'], $rating, $reviewContent);
-
-    // Redirect to account page after submission
     header("Location: account.php");
     exit();
 }
@@ -38,7 +34,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Edit Review</title>
-    <!-- Add your stylesheets here -->
 </head>
 <body>
     <h2>Edit Review</h2>
@@ -49,7 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <label for="rating">Rating:</label>
                 <select name="rating" id="rating">
                     <?php for ($i = 1; $i <= 5; $i++): ?>
-                        <option value="<?php echo $i; ?>" <?php echo $i == $review['number_of_stars'] ? 'selected' : ''; ?>>
+                        <option value="<?php echo $i; ?>" <?php echo (isset($review['number_of_stars']) && $i == $review['number_of_stars']) ? 'selected' : ''; ?>>
                             <?php echo $i; ?>
                         </option>
                     <?php endfor; ?>

@@ -351,7 +351,7 @@ function updateReview($review_id, $userId, $rating, $reviewContent) {
    global $db;
    $db->beginTransaction();
    try {
-       // Update the review content
+       // Update the review 
        $queryReview = "UPDATE Reviews SET content = :content WHERE review_id = :review_id AND user_id = :userId";
        $statementReview = $db->prepare($queryReview);
        $statementReview->bindValue(':content', $reviewContent);
@@ -360,7 +360,6 @@ function updateReview($review_id, $userId, $rating, $reviewContent) {
        $statementReview->execute();
        $statementReview->closeCursor();
 
-       // Update the rating if provided
        if ($rating) {
            $queryRating = "UPDATE Rates SET number_of_stars = :rating WHERE user_id = :userId AND isbn13 = (SELECT isbn13 FROM Reviews WHERE review_id = :review_id)";
            $statementRating = $db->prepare($queryRating);
@@ -371,14 +370,11 @@ function updateReview($review_id, $userId, $rating, $reviewContent) {
            $statementRating->closeCursor();
        }
 
-       // Commit the transaction
        $db->commit();
    } catch (PDOException $e) {
-       // If there is an error, rollback the transaction
        $db->rollback();
        $error_message = $e->getMessage();
        error_log("Error updating review: $error_message");
-       // Rethrow the exception to handle it according to your application's policy
        throw $e;
    }
 }
