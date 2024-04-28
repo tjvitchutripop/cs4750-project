@@ -14,6 +14,12 @@ if(isset($_POST['isbn13_to_remove']) && isset($_SESSION['userId'])) {
     removeFromReadingList($_SESSION['userId'], $_POST['isbn13_to_remove']);
 }
 
+
+if(isset($_POST['review_id_to_remove']) && isset($_SESSION['userId'])) {
+    removeReview($_SESSION['userId'], $_POST['review_id_to_remove']);
+    $userReviews = getUserReviews($_SESSION['userId']);
+}
+
 $readingList = getReadingList($_SESSION['userId']);
 $userReviews = getUserReviews($_SESSION['userId']);
 
@@ -84,7 +90,13 @@ $userReviews = getUserReviews($_SESSION['userId']);
                     <p><?php echo htmlspecialchars($review['content']); ?></p>
                     <!-- Link to edit review -->
                     <a href="edit-review.php?review_id=<?php echo $review['review_id']; ?>">Edit Review</a>
+                    <!-- Remove Review Form -->
+                    <form action="account.php" method="post" style="display: inline;">
+                        <input type="hidden" name="review_id_to_remove" value="<?php echo $review['review_id']; ?>">
+                        <button type="submit" class="btn btn-warning btn-sm">Remove Review</button>
+                    </form>
                 </div>
+                
             </div>
         <?php endforeach; ?>
     </div>

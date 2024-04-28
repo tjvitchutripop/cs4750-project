@@ -320,6 +320,22 @@ function addReview($userId, $isbn13, $rating, $reviewContent) {
    }
 }
 
+function removeReview($user_id, $review_id) {
+   global $db;
+   $query = "DELETE FROM Reviews WHERE user_id = :user_id AND review_id = :review_id";
+   
+   try {
+       $statement = $db->prepare($query);
+       $statement->bindValue(':user_id', $user_id);
+       $statement->bindValue(':review_id', $review_id);
+       $statement->execute();
+       $statement->closeCursor();
+   } catch (PDOException $e) {
+       $error_message = $e->getMessage();
+       error_log("Error removing review: $error_message");
+   }
+}
+
 
 
 ?>
