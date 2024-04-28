@@ -9,6 +9,10 @@ require("request-db.php");
 $book = getBook($_GET["isbn13"]);
 $authors = getAuthors($_GET["isbn13"]);
 $reviews = getReviews($_GET["isbn13"]);
+if(isset($_POST['isbn13_to_add']) && isset($_SESSION['userId'])) {
+    // Function to add book to reading list needs to be implemented in request-db.php
+    addToReadingList($_SESSION['userId'], $_POST['isbn13_to_add']);
+}
 
 ?>
 

@@ -193,7 +193,6 @@ function validateUser($userId, $password) {
 }
 function getReadingList($user_id) {
    global $db;
-   // Corrected the table name from Reading_list_books to Reading_list_isbn13
    $query = "SELECT b.* 
              FROM Books AS b 
              JOIN Reading_list_isbn13 AS rli ON b.isbn13 = rli.isbn13 
@@ -228,6 +227,40 @@ function getUserReviews($user_id) {
    return $result;
 }
 
+function addToReadingList($user_id, $isbn13) {
+   global $db;
+   
+   $queryCheck = "SELECT reading_list_id FROM Creates WHERE user_id = :user_id LIMIT 1";
+   $statementCheck = $db->prepare($queryCheck);
+   $statementCheck->bindValue(':user_id', $user_id);
+   $statementCheck->execute();
+   $readingList = $statementCheck->fetch();
+   $statementCheck->closeCursor();
+
+   if (!$readingList) {
+
+       $queryInsertReadingList = "INSERT INTO Reading_list (reading_list_id, reading_list_title) VALUES (:user_id, 'Default Reading List')";
+       $statementInsertReadingList = $db->prepare($queryInsertReadingList);
+       $statementInsertReadingList->bindValue(':user_id', $user_id);
+       $statementInsertReadingList->execute();
+       $statementInsertReadingList->closeCursor();
+
+       $queryCreate = "INSERT INTO Creates (user_id, reading_list_id) VALUES (:user_id, :user_id)";
+       $statementCreate = $db->prepare($queryCreate);
+       $statementCreate->bindValue(':user_id', $user_id);
+       $statementCreate->execute();
+       $statementCreate->closeCursor();
+       $readingList['reading_list_id'] = $user_id;
+   }
+
+   // Add the book to the user's reading list
+   $queryInsert = "INSERT INTO Reading_list_isbn13 (reading_list_id, isbn13) VALUES (:reading_list_id, :isbn13) ON DUPLICATE KEY UPDATE isbn13=isbn13";
+   $statementInsert = $db->prepare($queryInsert);
+   $statementInsert->bindValue(':reading_list_id', $readingList['reading_list_id']);
+   $statementInsert->bindValue(':isbn13', $isbn13);
+   $statementInsert->execute();
+   $statementInsert->closeCursor();
+}
 
 
 
