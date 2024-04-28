@@ -9,6 +9,10 @@ if (!isset($_SESSION['userId'])) {
     exit();
 }
 
+if(isset($_POST['isbn13_to_remove']) && isset($_SESSION['userId'])) {
+    removeFromReadingList($_SESSION['userId'], $_POST['isbn13_to_remove']);
+    $readingList = getReadingList($_SESSION['userId']);
+}
 $readingList = getReadingList($_SESSION['userId']);
 $userReviews = getUserReviews($_SESSION['userId']);
 
@@ -48,13 +52,17 @@ $userReviews = getUserReviews($_SESSION['userId']);
         <section id="reading-list">
             <h2>Reading List</h2>
             <div class="book-list">
-                <?php foreach ($readingList as $book): ?>
-                    <div class="book">
-                        <img src="<?php echo htmlspecialchars($book['Thumbnail']); ?>" alt="Book Thumbnail">
-                        <p><?php echo htmlspecialchars($book['title']); ?></p>
-                        <!-- Other book details can be displayed here -->
-                    </div>
-                <?php endforeach; ?>
+            <?php foreach ($readingList as $book): ?>
+                <div class="book">
+                    <img src="<?php echo htmlspecialchars($book['Thumbnail']); ?>" alt="Book Thumbnail">
+                    <p><?php echo htmlspecialchars($book['title']); ?></p>
+                    <!-- Delete form -->
+                    <form action="account.php" method="post">
+                        <input type="hidden" name="isbn13_to_remove" value="<?php echo htmlspecialchars($book['isbn13']); ?>">
+                        <button type="submit" class="btn btn-danger">Remove from Reading List</button>
+                    </form>
+                </div>
+            <?php endforeach; ?>
             </div>
         </section>
 

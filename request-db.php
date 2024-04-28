@@ -1,4 +1,5 @@
 <?php
+// session_start();
 //https://docs.google.com/document/d/1O5voZDdHTsqQdEx9bH-GcTt6h2XGVAGCPLXOHSPW0Vc/edit
 function addRequests($reqDate, $roomNumber, $reqBy, $repairDesc, $reqPriority)
 {
@@ -229,7 +230,7 @@ function getUserReviews($user_id) {
 
 function addToReadingList($user_id, $isbn13) {
    global $db;
-   
+
    $queryCheck = "SELECT reading_list_id FROM Creates WHERE user_id = :user_id LIMIT 1";
    $statementCheck = $db->prepare($queryCheck);
    $statementCheck->bindValue(':user_id', $user_id);
@@ -262,6 +263,21 @@ function addToReadingList($user_id, $isbn13) {
    $statementInsert->closeCursor();
 }
 
+function removeFromReadingList($user_id, $isbn13) {
+    global $db;
+    $query = "DELETE FROM Reading_list_isbn13 WHERE reading_list_id = :reading_list_id AND isbn13 = :isbn13";
+
+    try {
+        $statement = $db->prepare($query);
+        $statement->bindValue(':reading_list_id', $user_id);
+        $statement->bindValue(':isbn13', $isbn13);
+        $statement->execute();
+        $statement->closeCursor();
+    } catch (PDOException $e) {
+        $error_message = $e->getMessage();
+        error_log("Error removing book from reading list: $error_message");
+    }
+}
 
 
 ?>
