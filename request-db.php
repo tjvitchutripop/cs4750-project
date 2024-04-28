@@ -336,6 +336,52 @@ function removeReview($user_id, $review_id) {
    }
 }
 
+function getReviewById($review_id) {
+   global $db;
+   $query = "SELECT * FROM Reviews WHERE review_id = :review_id";
+   $statement = $db->prepare($query);
+   $statement->bindValue(':review_id', $review_id);
+   $statement->execute();
+   $review = $statement->fetch(PDO::FETCH_ASSOC);
+   $statement->closeCursor();
+   return $review;
+}
+
+function updateReview($review_id, $userId, $rating, $reviewContent) {
+   global $db;
+   $db->beginTransaction();
+   try {
+       // Update the review content
+       $queryReview = "UPDATE Reviews SET content = :content WHERE review_id = :review_id AND user_id = :userId";
+       $statementReview = $db->prepare($queryReview);
+       $statementReview->bindValue(':content', $reviewContent);
+       $statementReview->bindValue(':review_id', $review_id);
+       $statementReview->bindValue(':userId', $userId);
+       $statementReview->execute();
+       $statementReview->closeCursor();
+
+       // Update the rating if provided
+       if ($rating) {
+           $queryRating = "UPDATE Rates SET number_of_stars = :rating WHERE user_id = :userId AND isbn13 = (SELECT isbn13 FROM Reviews WHERE review_id = :review_id)";
+           $statementRating = $db->prepare($queryRating);
+           $statementRating->bindValue(':rating', $rating);
+           $statementRating->bindValue(':userId', $userId);
+           $statementRating->bindValue(':review_id', $review_id);
+           $statementRating->execute();
+           $statementRating->closeCursor();
+       }
+
+       // Commit the transaction
+       $db->commit();
+   } catch (PDOException $e) {
+       // If there is an error, rollback the transaction
+       $db->rollback();
+       $error_message = $e->getMessage();
+       error_log("Error updating review: $error_message");
+       // Rethrow the exception to handle it according to your application's policy
+       throw $e;
+   }
+}
 
 
 ?>
