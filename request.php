@@ -149,12 +149,33 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')   // GET
 </div>
 
 
+</div>
+
+
+
+</div>
+
 <hr/>
 <div class="container">
   <h3>Books</h3>
+  <form action="" method="GET">
+      <label for="sort">Sort by:</label>
+      <select name="sort" id="sort">
+          <option value="title_asc">Title 0-9, A-Z</option>
+      </select>
+      <button type="submit">Sort</button>
+  </form>
   <div class="row justify-content-center">  
-    <?php foreach ($list_of_requests as $req_info): ?>
-      <div class="col-md-2"> <!-- Adjust the column size as needed -->
+    <?php 
+      // Sort the list of requests if the form is submitted
+      if (isset($_GET['sort']) && $_GET['sort'] === 'title_asc') {
+        usort($list_of_requests, function($a, $b) {
+          return strcmp($a['title'], $b['title']);
+        });
+      }
+      // Display sorted or original list of requests
+      foreach ($list_of_requests as $req_info): ?>
+      <div class="col-md-2">
         <div class="book">
           <img src="<?php echo $req_info['Thumbnail']; ?>" alt="Thumbnail">
           <p class="title"><?php echo $req_info['title']; ?></p>
