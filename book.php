@@ -77,8 +77,20 @@ if(isset($_POST['unread']))
         <img src="<?php echo $book["Thumbnail"]; ?>" style="width:15vw;"></img>
         <!-- If logged in can add to reading list -->
         <?php if(isset($_SESSION['userId'])) : ?>
+        <!-- check if book is read by user -->
+        <?php if(!isBookRead($_SESSION['userId'], $_GET["isbn13"])) : ?>
+        <form action="" method="POST">
+            <input class="btn btn-success mt-2" type='submit' name='submit' value='Mark as Read' />
+        </form>
+        <!-- otherwise display mark as unread -->
+        <?php else : ?>
+        <form action="" method="POST">
+            <input class="btn btn-danger mt-2" type='submit' name='unread' value='Mark as Unread' />
+        </form>
+        <?php endif; ?>
+        <?php endif; ?>
         <div class="dropdown">
-            <button class="btn btn-secondary dropdown-toggle" style="margin-top:10px;" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <button class="btn btn-secondary dropdown-toggle" style="margin-top:-10px;" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                 Add to Reading List
             </button>
             <ul class="dropdown-menu">
@@ -92,38 +104,31 @@ if(isset($_POST['unread']))
                 <?php endforeach; ?>
             </ul>
         </div>
-        <!-- check if book is read by user -->
-        <?php if(!isBookRead($_SESSION['userId'], $_GET["isbn13"])) : ?>
-        <form action="" method="POST">
-            <input class="btn btn-success mt-2" type='submit' name='submit' value='Mark as Read' />
-        </form>
-        <!-- otherwise display mark as unread -->
-        <?php else : ?>
-        <form action="" method="POST">
-            <input class="btn btn-danger mt-2" type='submit' name='unread' value='Mark as Unread' />
-        </form>
-        <?php endif; ?>
 
-        <?php endif; ?>
     </div>
     <div class="col-sm-8">
         <h1><?php echo $book["title"]; ?></h1>
         <?php foreach($authors as $author) : ?>
             <h2 style="color:gray;"><?php echo $author["author_name"]; ?></h2>
         <?php endforeach; ?>
-        <h5>Average Rating: <?php echo getStarRating($average_rating)?> (<?php echo $average_rating; ?> / 5)</h5>
-        <?php if($your_rating) : ?>
-            <h5>Your Rating: <?php echo getStarRating($your_rating)?> (<?php echo $your_rating; ?> / 5)</h5>
-        <?php else : ?>
-            <h5>You have not rated this book yet</h5>
-        <?php endif; ?>
-        <h5>Read by <?php echo $numberofreads["num"]; ?> people</h5>
+        <h5 class="mt-2">Read by <?php echo $numberofreads["num"]; ?></h5>
+        <h6>ISBN13: <?php echo $book["isbn13"]; ?></h5>
+        <h6># of pages: <?php echo $book["Number_of_pages"]; ?></h6>
+        <h6>Categories: <?php echo $book["Categories"]; ?></h6>
         <p><?php echo $book["Description"]; ?></p>
         </div>
   </div>
 
 <div style="display:flex; justify-content:space-between;">
-    <h3 style="margin-top:20px;">Reviews</h3>    
+<div>  
+    <h3 style="margin-top:20px;">Reviews</h3>  
+         <h5>Average Rating: <?php echo getStarRating($average_rating)?> (<?php echo $average_rating; ?> / 5)</h5>
+        <?php if($your_rating) : ?>
+            <h5>Your Rating: <?php echo getStarRating($your_rating)?> (<?php echo $your_rating; ?> / 5)</h5>
+        <?php else : ?>
+            <h5>You have not rated this book yet</h5>
+        <?php endif; ?>
+        </div>
     <a href="review.php?isbn13=<?php echo htmlspecialchars($_GET["isbn13"]); ?>" style="height:40px; margin-top:15px;" class="btn btn-primary">+ Add Review</a>
 </div>
 <?php foreach($reviews as $review) : ?>

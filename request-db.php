@@ -321,6 +321,64 @@ function getNumLikes($review_id) {
    return $result;
 }
 
+function removeBook($isbn13) {
+   global $db;
+   // remove book from Books authors
+   $queryBooksAuthors = "DELETE FROM Books_authors WHERE isbn13 = :isbn13";
+   $statementBooksAuthors = $db->prepare($queryBooksAuthors);
+   $statementBooksAuthors->bindValue(':isbn13', $isbn13);
+   $statementBooksAuthors->execute();
+   $statementBooksAuthors->closeCursor();
+   // remove comments on reviews for the book
+   $queryComments = "DELETE FROM Comment WHERE review_id IN (SELECT review_id FROM Reviews WHERE isbn13 = :isbn13)";
+   $statementComments = $db->prepare($queryComments);
+   $statementComments->bindValue(':isbn13', $isbn13);
+   $statementComments->execute();
+   $statementComments->closeCursor();
+   // remove likes for reviews of the book
+   $queryLikes = "DELETE FROM Likes WHERE review_id IN (SELECT review_id FROM Reviews WHERE isbn13 = :isbn13)";
+   $statementLikes = $db->prepare($queryLikes);
+   $statementLikes->bindValue(':isbn13', $isbn13);
+   $statementLikes->execute();
+   $statementLikes->closeCursor();
+   // remove rates for the book
+   $queryRates = "DELETE FROM Rates WHERE isbn13 = :isbn13";
+   $statementRates = $db->prepare($queryRates);
+   $statementRates->bindValue(':isbn13', $isbn13);
+   $statementRates->execute();
+   $statementRates->closeCursor();
+   // remove reviews for the book on provides
+   $queryProvides = "DELETE FROM Provides NATURAL JOIN Reviews WHERE isbn13 = :isbn13";
+   $statementProvides = $db->prepare($queryProvides);
+   $statementProvides->bindValue(':isbn13', $isbn13);
+   $statementProvides->execute();
+   $statementProvides->closeCursor();
+   // remove reviews for the book
+   $queryReviews = "DELETE FROM Reviews WHERE isbn13 = :isbn13";
+   $statementReviews = $db->prepare($queryReviews);
+   $statementReviews->bindValue(':isbn13', $isbn13);
+   $statementReviews->execute();
+   $statementReviews->closeCursor();
+   // remove book from Reads
+   $queryReads = "DELETE FROM Reads WHERE isbn13 = :isbn13";
+   $statementReads = $db->prepare($queryReads);
+   $statementReads->bindValue(':isbn13', $isbn13);
+   $statementReads->execute();
+   $statementReads->closeCursor();
+   // remove book from Reading_list_isbn13
+   $queryReadingListIsbn13 = "DELETE FROM Reading_list_isbn13 WHERE isbn13 = :isbn13";
+   $statementReadingListIsbn13 = $db->prepare($queryReadingListIsbn13);
+   $statementReadingListIsbn13->bindValue(':isbn13', $isbn13);
+   $statementReadingListIsbn13->execute();
+   $statementReadingListIsbn13->closeCursor();
+   // remove book from Books
+   $queryBooks = "DELETE FROM Books WHERE isbn13 = :isbn13";
+   $statementBooks = $db->prepare($queryBooks);
+   $statementBooks->bindValue(':isbn13', $isbn13);
+   $statementBooks->execute();
+   $statementBooks->closeCursor();
+}
+
 function addUser($firstName, $lastName, $userId, $password, $admin) {
    global $db;
    $query = "INSERT INTO User (user_id, user_password, profile_picture, first_name, last_name, admin)
@@ -380,6 +438,40 @@ function validateUser($userId, $password) {
        return false;
    }
 }
+
+function addBook($isbn13, $isbn10, $title, $subtitle, $Thumbnail, $Description, $Number_of_pages, $Categories, $Average_rating, $Rating_count){
+   global $db;
+   $query = "INSERT INTO Books (isbn13, Thumbnail, Description, isbn10, subtitle, Average_rating, Number_of_pages, Rating_count, title, Categories)
+   VALUES (:isbn13, :Thumbnail, :Description, :isbn10, :subtitle, :Average_rating, :Number_of_pages, :Rating_count, :title, :Categories)";   
+   try {
+      // $db->beginTransaction();
+      $statement = $db->prepare($query);
+
+      $statement->bindValue(':isbn13', $isbn13, PDO::PARAM_INT); 
+      $statement->bindValue(':isbn10', $isbn10, PDO::PARAM_INT); 
+      $statement->bindValue(':title', $title);
+      $statement->bindValue(':subtitle', $subtitle);
+      $statement->bindValue(':Thumbnail', $Thumbnail);
+      $statement->bindValue(':Description', $Description);
+      $statement->bindValue(':Number_of_pages', $Number_of_pages, PDO::PARAM_INT); 
+      $statement->bindValue(':Categories', $Categories);
+      $statement->bindValue(':Average_rating', $Average_rating, PDO::PARAM_INT); 
+      $statement->bindValue(':Rating_count', $Rating_count, PDO::PARAM_INT); 
+
+      $statement->execute();
+      $statement->closeCursor();
+      return true;
+   } catch (PDOException $e) {
+      // $db->rollback(); // Rollback transaction on failure
+      $error_message = $e->getMessage();
+      echo "<p>Error inserting user into database: $error_message </p>";
+      return false; // Return false to indicate failure
+      // $error_message = $e->getMessage();
+      // echo "<p>Error inserting user into database: $error_message </p>";
+   }
+}
+
+
 function getReadingLists($user_id) {
    global $db;
    $query = "SELECT b.*, rl.reading_list_id, rl.reading_list_title
