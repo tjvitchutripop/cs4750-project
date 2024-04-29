@@ -115,7 +115,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')   // GET
                                       $query = getTitle($search);
                                     }
                                     else if($selectOption == 'isbn13') {
-                                      $query = getBook($search);
+                                      $query = getBookbyid($search);
                                     }
                                     else if($selectOption == 'author') {
                                       $query = getBookFromAuthors($search);

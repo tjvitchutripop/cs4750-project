@@ -57,6 +57,19 @@ function getBook($isbn13)
    $statement = $db->prepare($query);    // compile
    $statement->bindValue(':isbn13', $isbn13);
    $statement->execute();
+   $result = $statement->fetch();
+   $statement->closeCursor();
+
+   return $result;
+}
+
+function getBookbyid($isbn13)  
+{
+   global $db;
+   $query = "select * from Books where isbn13=:isbn13"; 
+   $statement = $db->prepare($query);    // compile
+   $statement->bindValue(':isbn13', $isbn13);
+   $statement->execute();
    $result = $statement->fetchAll();
    $statement->closeCursor();
 
