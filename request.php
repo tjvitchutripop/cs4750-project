@@ -67,10 +67,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')   // GET
       <div class="col-md-7">
           <div class="card mt-5">
               <div class="card-header text-left">
-                  <h4>Search For A Book</h4>
+                  <h4>Search</h4>
               </div>
               <div class="card-body">
-              Title/Name/isbn13:
+              Title/Name/ISBN13:
                   <form action="" method="GET">
                       <div class="row"> 
                           <div class="col-md-8">
@@ -198,8 +198,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')   // GET
       <div class="col-md-2">
         <div class="book">
           <a href="book.php?isbn13=<?php echo urlencode($req_info['isbn13']); ?>" style="text-decoration: none; color: inherit;">
-              <img class="card shadow-md" src="<?php echo htmlspecialchars($req_info['Thumbnail']); ?>" alt="Thumbnail">
-              <p class="title"><?php echo htmlspecialchars($req_info['title']); ?></p>
+            <?php if (!empty($req_info['Thumbnail'])): ?>
+              <img src="<?php echo htmlspecialchars($req_info['Thumbnail']); ?>" alt="Thumbnail">
+            <?php else: ?>
+              <img src="no-thumbnail.jpg" alt="No Thumbnail Available">
+             <?php endif; ?>
+            <p class="title"><?php echo htmlspecialchars($req_info['title']); ?></p>
           </a>
         </div>
       </div>
