@@ -13,14 +13,18 @@ $isbn13 = $_GET["isbn13"] ?? '';
 $book = $isbn13 ? getBook($isbn13) : null;
 $authors = $isbn13 ? getAuthors($isbn13) : null;
 
+// check if rating and review content are filled out, if not then warn
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $rating = $_POST['rating'];
     $reviewContent = $_POST['reviewContent'];
-
-    addReview($_SESSION['userId'], $isbn13, $rating, $reviewContent);
-
-    header("Location: account.php");
-    exit();
+    if (empty($rating) || empty($reviewContent)){
+        $_SESSION['errorMessage'][] = "Please fill out both rating and review.";
+    }
+    else{
+        addReview($_SESSION['userId'], $isbn13, $rating, $reviewContent);
+        header("Location: account.php");
+        exit();
+    }
 }
 ?>
 
@@ -35,6 +39,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <?php include("header.php"); ?>
 
 <body style="margin:80px;">
+<?php if (!empty($_SESSION['errorMessage'])): ?>
+
+
+<div class="alert alert-danger" role="alert">
+    <?php foreach ($_SESSION['errorMessage'] as $message): ?>
+        <?= htmlspecialchars($message) ?><br>
+    <?php endforeach; ?>
+    <?php unset($_SESSION['errorMessage']);  ?>
+</div>
+<?php endif; ?>
     <h1>Share your thoughts 📣</h1>
     <div class="row mt-4">
         <div class="col-sm-3">
