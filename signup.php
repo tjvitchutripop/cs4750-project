@@ -5,10 +5,13 @@ require("connect-db.php");
 require("request-db.php");
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    if (!filter_var($_POST['userId'], FILTER_VALIDATE_INT)) {
-        echo "User ID must be a number.";
-    } elseif ($_POST['password'] !== $_POST['confirm_password']) {
-        echo "Passwords do not match.";
+    if (!filter_var($_POST['userId'], FILTER_VALIDATE_INT) || strlen((string)$_POST['userId']) != 9) {
+        // echo "User ID must be a 9-digit number.";
+        $_SESSION['errorMessage'][] = "User ID must be a 9-digit number.";
+
+    }  elseif ($_POST['password'] !== $_POST['confirm_password']) {
+        // echo "Passwords do not match.";
+        $_SESSION['errorMessage'][] = "Passwords do not match.";
     } else {
       $userAdded = addUser($_POST['first_name'], $_POST['last_name'], $_POST['userId'], $_POST['password']);
       header("Location: index.php");  // Redirect to success page if user is added
@@ -59,6 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         <!-- FOR ERROR MESSAGE DISPLAYING -->
     <?php if (!empty($_SESSION['errorMessage'])): ?>
+
 
       <div class="alert alert-danger" role="alert">
           <?php foreach ($_SESSION['errorMessage'] as $message): ?>
