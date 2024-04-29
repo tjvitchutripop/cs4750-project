@@ -262,6 +262,7 @@ function addUser($firstName, $lastName, $userId, $password) {
    VALUES (:userId, :password, 'profile_ex.jpg', :firstName, :lastName)";  
    
    try {
+      // $db->beginTransaction();
       $statement = $db->prepare($query);
 
       $statement->bindValue(':userId', $userId, PDO::PARAM_INT); 
@@ -274,8 +275,12 @@ function addUser($firstName, $lastName, $userId, $password) {
       $statement->closeCursor();
       return true;
    } catch (PDOException $e) {
+      // $db->rollback(); // Rollback transaction on failure
       $error_message = $e->getMessage();
       echo "<p>Error inserting user into database: $error_message </p>";
+      return false; // Return false to indicate failure
+      // $error_message = $e->getMessage();
+      // echo "<p>Error inserting user into database: $error_message </p>";
    }
 }
 
