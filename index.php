@@ -105,18 +105,19 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')   // GET
                               {
                                   $search = $_GET['search'];
                                   $selectOption = $_GET['search_type'];
-                                  if(empty($search) && empty($selectOption))
+                                  if(empty($search) || empty($selectOption))
                                   {
                                       echo "You need to fill all Fields";
                                   }
+                                  
                                   else {
                                     if($selectOption == 'title') {
                                       $query = getTitle($search);
                                     }
-                                    if($selectOption == 'isbn13') {
+                                    else if($selectOption == 'isbn13') {
                                       $query = getBook($search);
                                     }
-                                    if($selectOption == 'author') {
+                                    else if($selectOption == 'author') {
                                       $query = getBookFromAuthors($search);
                                     }
                                     if($query)
