@@ -1,6 +1,7 @@
 <?php 
-session_start(); 
-if (!isset($_SESSION['userId'])) {
+if (session_status() == PHP_SESSION_NONE) {
+  session_start();
+}if (!isset($_SESSION['userId'])) {
   $userDisplay = "Log In / Sign up";
 } else {
   $userDisplay = "Your Account"; // Display user ID for verification
