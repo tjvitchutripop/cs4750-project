@@ -9,6 +9,17 @@ require("request-db.php");
 $book = getBook($_GET["isbn13"]);
 $authors = getAuthors($_GET["isbn13"]);
 $reviews = getReviews($_GET["isbn13"]);
+$average_rating = calculateAverageRating($_GET["isbn13"]);
+$your_rating = getUserRating($_SESSION['userId'], $_GET["isbn13"]);
+
+// function that returns a string of star emojis based on the rating
+function getStarRating($rating) {
+    $stars = "";
+    for($i = 0; $i < $rating; $i++) {
+        $stars .= "⭐";
+    }
+    return $stars;
+}
  
 // store comments for each review in reviews array
 for($i = 0; $i < count($reviews); $i++) {
@@ -49,6 +60,7 @@ if(isset($_POST['unread']))
 <!DOCTYPE html>
 <html>
     <head>
+    <title>Literary Loop | Book</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://getbootstrap.com/docs/5.3/assets/css/docs.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
@@ -99,20 +111,29 @@ if(isset($_POST['unread']))
         <?php foreach($authors as $author) : ?>
             <h2 style="color:gray;"><?php echo $author["author_name"]; ?></h2>
         <?php endforeach; ?>
-        <h5>Average Rating: <?php echo $book["Average_rating"]; ?> / 5</h5>
+        <h5>Average Rating: <?php echo getStarRating($average_rating)?> (<?php echo $average_rating; ?> / 5)</h5>
+        <?php if($your_rating) : ?>
+            <h5>Your Rating: <?php echo getStarRating($your_rating)?> (<?php echo $your_rating; ?> / 5)</h5>
+        <?php else : ?>
+            <h5>You have not rated this book yet</h5>
+        <?php endif; ?>
         <h5>Read by <?php echo $numberofreads["num"]; ?> people</h5>
         <p><?php echo $book["Description"]; ?></p>
         </div>
   </div>
 
 <div style="display:flex; justify-content:space-between;">
-    <h3 style="margin-top:20px;">Reviews</h3>
+    <h3 style="margin-top:20px;">Reviews</h3>    
     <a href="review.php?isbn13=<?php echo htmlspecialchars($_GET["isbn13"]); ?>" style="height:40px; margin-top:15px;" class="btn btn-primary">+ Add Review</a>
 </div>
 <?php foreach($reviews as $review) : ?>
     <div class="card shadow-sm" style="margin-top:10px;">
         <div class="card-body">
             <h5 class="card-title mb-2"><b><?php echo $review["first_name"]; ?> <?php echo $review["last_name"]; ?></b> says</h5>
+            <!-- Check if user has rated -->
+            <?php if($review["number_of_stars"]) : ?>
+                <h6 class="card-subtitle mb-2 text-muted">Rating: <?php echo getStarRating($review["number_of_stars"]); ?> (<?php echo $review["number_of_stars"]; ?> / 5)</h6>
+            <?php endif; ?>
             <p class="card-text"><?php echo $review["content"]; ?></p>
             <div style="display:flex; justify-content:space-between;">
                 <div class="d-flex">

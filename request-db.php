@@ -143,7 +143,12 @@ function getAuthors($isbn13)
 function getReviews($isbn13)
 {
    global $db;
-   $query = "select * from Reviews natural join User where isbn13=:isbn13 order by time_posted desc"; 
+   $query = "SELECT Reviews.*, User.*, Rates.number_of_stars 
+             FROM Reviews 
+             LEFT JOIN Rates ON Reviews.user_id = Rates.user_id AND Reviews.isbn13 = Rates.isbn13 
+             JOIN User ON Reviews.user_id = User.user_id
+             WHERE Reviews.isbn13 = :isbn13 
+             ORDER BY Reviews.time_posted DESC"; 
    $statement = $db->prepare($query);    // compile
    $statement->bindValue(':isbn13', $isbn13);
    $statement->execute();
@@ -412,23 +417,23 @@ function getUserName($user_id) {
 
 function getUserReviews($user_id) {
    global $db;
-   // Including user profile picture in the selection.
-   $query = "SELECT r.*, b.Thumbnail, ra.number_of_stars, u.profile_picture
-             FROM Reviews AS r
-             JOIN Books AS b ON r.isbn13 = b.isbn13
-             JOIN User AS u ON r.user_id = u.user_id
-             LEFT JOIN Rates AS ra ON ra.isbn13 = b.isbn13 AND ra.user_id = r.user_id
-             WHERE r.user_id = :user_id
-             ORDER BY r.time_posted DESC"; // Ordering by most recent reviews first.
-   
-   $statement = $db->prepare($query);
-   $statement->bindValue(':user_id', $user_id, PDO::PARAM_INT);
+   $query = "SELECT *
+             FROM Reviews 
+             LEFT JOIN Rates ON Reviews.user_id = Rates.user_id AND Reviews.isbn13 = Rates.isbn13 
+             LEFT JOIN User ON Reviews.user_id = User.user_id
+             LEFT JOIN Books ON Reviews.isbn13 = Books.isbn13
+             WHERE Reviews.user_id = :user_id
+             ORDER BY Reviews.time_posted DESC"; 
+   $statement = $db->prepare($query);    // compile
+   $statement->bindValue(':user_id', $user_id);
    $statement->execute();
-   $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+   $result = $statement->fetchAll();
    $statement->closeCursor();
 
    return $result;
 }
+
+
 
 function isBookRead($user_id, $isbn13) {
    global $db;
@@ -537,15 +542,17 @@ function addReview($userId, $isbn13, $rating, $reviewContent) {
        $review_id = mt_rand(100000, 999999);
 
        // Insert review
-       $queryReview = "INSERT INTO Reviews (review_id, isbn13, user_id, likes, content, time_posted) VALUES (:review_id, :isbn13, :userId, :likes, :content, NOW())";
-       $statementReview = $db->prepare($queryReview);
-       $statementReview->bindValue(':review_id', $review_id);
-       $statementReview->bindValue(':isbn13', $isbn13);
-       $statementReview->bindValue(':userId', $userId);
-       $statementReview->bindValue(':likes', 0); 
-       $statementReview->bindValue(':content', $reviewContent);
-       $statementReview->execute();
-       $statementReview->closeCursor();
+       if($reviewContent != ""){
+         $queryReview = "INSERT INTO Reviews (review_id, isbn13, user_id, likes, content, time_posted) VALUES (:review_id, :isbn13, :userId, :likes, :content, NOW())";
+         $statementReview = $db->prepare($queryReview);
+         $statementReview->bindValue(':review_id', $review_id);
+         $statementReview->bindValue(':isbn13', $isbn13);
+         $statementReview->bindValue(':userId', $userId);
+         $statementReview->bindValue(':likes', 0); 
+         $statementReview->bindValue(':content', $reviewContent);
+         $statementReview->execute();
+         $statementReview->closeCursor();
+       }
 
        // Insert rating
        if ($rating) {
@@ -565,6 +572,45 @@ function addReview($userId, $isbn13, $rating, $reviewContent) {
        throw $e;
    }
 }
+
+function getUserRating($userId, $isbn13) {
+   global $db;
+   $query = "SELECT number_of_stars FROM Rates WHERE user_id = :userId AND isbn13 = :isbn13";
+   $statement = $db->prepare($query);
+   $statement->bindValue(':userId', $userId);
+   $statement->bindValue(':isbn13', $isbn13);
+   $statement->execute();
+   $result = $statement->fetch();
+   $statement->closeCursor();
+   return $result ? $result['number_of_stars'] : null;
+}
+
+function calculateAverageRating($isbn13) {
+   global $db;
+   
+   // Get average rating and number of people rating from Rates table
+   $query = "SELECT AVG(number_of_stars) AS average_rating, COUNT(user_id) AS rating_count FROM Rates WHERE isbn13 = :isbn13";
+   $statement = $db->prepare($query);
+   $statement->bindValue(':isbn13', $isbn13);
+   $statement->execute();
+   $result = $statement->fetch(PDO::FETCH_ASSOC);
+   $statement->closeCursor();
+   
+   // Get average rating and number of people that have already rated from Books table
+   $query = "SELECT Average_rating, Rating_count FROM Books WHERE isbn13 = :isbn13";
+   $statement = $db->prepare($query);
+   $statement->bindValue(':isbn13', $isbn13);
+   $statement->execute();
+   $book = $statement->fetch(PDO::FETCH_ASSOC);
+   $statement->closeCursor();
+   
+   // Combine the ratings and calculate the weighted average
+   $average_rating = (($result['average_rating'] * $result['rating_count']) + ($book['Average_rating'] * $book['Rating_count'])) / ($result['rating_count'] + $book['Rating_count']);
+   // round two decimal places
+   $average_rating = round($average_rating, 2);
+   return $average_rating;
+}
+
 
 function removeReview($user_id, $review_id) {
    global $db;

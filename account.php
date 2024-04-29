@@ -36,6 +36,13 @@ $userReviews = getUserReviews($_SESSION['userId']);
 $user = getUserName($_SESSION['userId']);
 $readList = getBookReadByUser($_SESSION['userId']);
 
+function getStarRating($rating) {
+    $stars = "";
+    for($i = 0; $i < $rating; $i++) {
+        $stars .= "⭐";
+    }
+    return $stars;
+}
 
 ?>
 <!DOCTYPE html>
@@ -155,7 +162,7 @@ $readList = getBookReadByUser($_SESSION['userId']);
             </div>
 
             <div class="row">
-                <h3><b>Books You've Read</b></h3>  
+                <h3><b>Books You've Read 🎉</b></h3>  
                 <?php if (empty($readList)): ?>
                     <p>You Have Read No Books</p>
                 <?php endif; ?>
@@ -184,7 +191,9 @@ $readList = getBookReadByUser($_SESSION['userId']);
                 </a>
                 </div>
                 <div class="col-sm-10">
-                    <div style="margin-top:60px; margin-left:10px;">
+                    <div style="margin-top:30px; margin-left:10px;">
+                        <h5><?php echo htmlspecialchars($review['title']); ?></h5>
+                        <h6><?php echo getStarRating($review['number_of_stars']); ?> (<?php echo $review['number_of_stars']; ?> / 5)</h6>
                     <p><?php echo htmlspecialchars($review['content']); ?></p>
                     </div>
                 </div>
