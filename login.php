@@ -12,7 +12,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (validateUser($userId, $password)) {
         // User validation successful
         $_SESSION['userId'] = $userId; // Store user ID or any other user-specific data in session
-        header("Location: request.php"); // Redirect to a welcome page
+        header("Location: index.php"); // Redirect to a welcome page
         // $message =  "Login successful";
         exit();
     } else {
@@ -27,7 +27,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>LOGIN</title>
+  <title>Literary Loop | Login</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
   <link rel="stylesheet" href="styles/main.css">
@@ -49,7 +49,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   </style>
 </head>
 
-<body>
+<!-- Add header -->
+<?php include("header.php"); ?>
+
+<body style="margin-top:100px">
     
   <main class="form-signin w-100 m-auto">
     <form action="login.php" method="POST"> 
@@ -62,7 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     <div class="form-floating">
                 <input type="text" class="form-control" id="floatingInput" name="userId" placeholder="User ID" required>
-                <label for="floatingInput">USER ID</label>
+                <label for="floatingInput">User ID</label>
             </div>
             <div class="form-floating">
                 <input type="password" class="form-control" id="floatingPassword" name="password" placeholder="Password" required>

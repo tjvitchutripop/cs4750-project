@@ -55,11 +55,12 @@ $user = getUserName($_SESSION['userId']);
 
 <main class="container" style="margin-top:80px;">
         <h1> Welcome back, <b><?php echo htmlspecialchars($user['first_name']); ?></b>!</h1>
+        <p>🪪 Your User ID is <b><?php echo htmlspecialchars($_SESSION['userId']); ?></b></p>
         <section id="reading-list" style="margin-top:30px">
         <div style="display:flex; justify-content:space-between;">
             <h3><b>Reading Lists 📚</b></h3>
             <!-- Button trigger modal -->
-            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
+            <button type="button" class="btn btn-primary " data-bs-toggle="modal" data-bs-target="#exampleModal">
             Create Reading List
             </button>
 
@@ -146,6 +147,8 @@ $user = getUserName($_SESSION['userId']);
                         </div>
                         <?php endforeach; ?>
                     </div>
+                    <!-- Line -->
+                    <hr>
             <?php endforeach; ?>
 
             </div>
