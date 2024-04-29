@@ -52,6 +52,14 @@ if(isset($_POST['unread']))
     removeReadThisBook($_SESSION['userId'], $_GET["isbn13"]);
     header("Location: book.php?isbn13=".$_GET["isbn13"]);
 }
+if(isset($_POST['like']))
+{
+    addLikeToReview($_SESSION['userId'], $_POST["like"]);
+}
+if(isset($_POST['unlike']))
+{
+    removeLikeFromReview($_SESSION['userId'], $_POST["unlike"]);
+}
 
 
 
@@ -151,9 +159,20 @@ if(isset($_POST['unread']))
             <div style="display:flex; justify-content:space-between;">
                 <div class="d-flex">
                     <?php if(isset($_SESSION['userId'])) : ?>
-                    <button class="btn btn-outline-primary" style="margin-right:10px;" type="submit"><i class="bi bi-hand-thumbs-up-fill"></i></button>
+                        <!-- If user has liked the review, they see the remove like button -->
+                        <?php if(hasLikedReview($_SESSION['userId'], $review["review_id"])) : ?>
+                            <form action="book.php?isbn13=<?php echo htmlspecialchars($_GET["isbn13"]); ?>" method="post">
+                                <input type="hidden" name="unlike" value="<?php echo $review["review_id"]; ?>">
+                                <button class="btn btn-outline-primary mt-2" type='submit'><i class="bi bi-hand-thumbs-up-fill"></i></button>
+                            </form>
+                        <?php else : ?>
+                            <form action="book.php?isbn13=<?php echo htmlspecialchars($_GET["isbn13"]); ?>" method="post">
+                                <input type="hidden" name="like" value="<?php echo $review["review_id"]; ?>">
+                                <button class="btn btn-outline-primary mt-2" type='submit'><i class="bi bi-hand-thumbs-up"></i></button>
+                            </form>
+                        <?php endif; ?>
                     <?php endif; ?>
-                    <p class="card-text mt-2"><?php echo $review["likes"]; ?> Likes</p>
+                    <p class="card-text mt-2" style="margin-left:10px"><?php echo getNumberLikes($review["review_id"]);?> Likes</p>
                 </div>
                 <!-- Modal for Comment -->
                 <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#commentModal<?php echo $review["review_id"]; ?>">

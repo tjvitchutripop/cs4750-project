@@ -272,31 +272,6 @@ function getBookReads($isbn13)
    return $result;
 }
 
-function addLikeToReview($user_id, $review_id) {
-   global $db;
-   $query = "INSERT INTO Likes (user_id, review_id) 
-   VALUES (:user_id, :review_id)";
-
-   try {
-      // $db->beginTransaction();
-      $statement = $db->prepare($query);
-
-      $statement->bindValue(':user_id', $user_id, PDO::PARAM_INT); 
-      $statement->bindValue(':review_id', $review_id);
-
-      $statement->execute();
-      $statement->closeCursor();
-      return true;
-   } catch (PDOException $e) {
-      // $db->rollback(); // Rollback transaction on failure
-      $error_message = $e->getMessage();
-      echo "<p>Error inserting user into database: $error_message </p>";
-      return false; // Return false to indicate failure
-      // $error_message = $e->getMessage();
-      // echo "<p>Error inserting user into database: $error_message </p>";
-   }
-}
-
 function addLike($review_id) {
    global $db;
    $query = "UPDATE Reviews SET likes = likes + 1 WHERE review_id =:review_id;";
@@ -736,6 +711,49 @@ function getUserRating($userId, $isbn13) {
    $result = $statement->fetch();
    $statement->closeCursor();
    return $result ? $result['number_of_stars'] : null;
+}
+
+function addLikeToReview($user_id, $review_id) {
+   global $db;
+   $query = "INSERT INTO `Likes` (user_id, review_id) VALUES (:user_id, :review_id)";
+   $statement = $db->prepare($query);
+   $statement->bindValue(':user_id', $user_id);
+   $statement->bindValue(':review_id', $review_id);
+   $statement->execute();
+   $statement->closeCursor();
+}
+
+function getNumberLikes($review_id) {
+   global $db;
+   $query = "SELECT COUNT(user_id) FROM `Likes` WHERE review_id = :review_id";
+   $statement = $db->prepare($query);
+   $statement->bindValue(':review_id', $review_id);
+   $statement->execute();
+   $result = $statement->fetch();
+   $statement->closeCursor();
+   return $result ? $result['COUNT(user_id)'] : 0;
+}
+
+function removeLikeFromReview($user_id, $review_id) {
+   global $db;
+   $query = "DELETE FROM `Likes` WHERE user_id = :user_id AND review_id = :review_id";
+   $statement = $db->prepare($query);
+   $statement->bindValue(':user_id', $user_id);
+   $statement->bindValue(':review_id', $review_id);
+   $statement->execute();
+   $statement->closeCursor();
+}
+
+function hasLikedReview($user_id, $review_id) {
+   global $db;
+   $query = "SELECT * FROM `Likes` WHERE user_id = :user_id AND review_id = :review_id";
+   $statement = $db->prepare($query);
+   $statement->bindValue(':user_id', $user_id);
+   $statement->bindValue(':review_id', $review_id);
+   $statement->execute();
+   $result = $statement->fetch();
+   $statement->closeCursor();
+   return $result ? true : false;
 }
 
 function calculateAverageRating($isbn13) {
