@@ -62,6 +62,31 @@ function getBook($isbn13)
 
    return $result;
 }
+function getTitle($title)  
+{
+   global $db;
+   $query = "select * from Books where title=:title"; 
+   $statement = $db->prepare($query);    // compile
+   $statement->bindValue(':title', $title);
+   $statement->execute();
+   $result = $statement->fetchAll();
+   $statement->closeCursor();
+
+   return $result;
+}
+
+function getBookFromAuthors($author)
+{
+   global $db;
+   $query = "SELECT * FROM Books NATURAL JOIN Books_authors WHERE author_name=:author;"; 
+   $statement = $db->prepare($query);    // compile
+   $statement->bindValue(':author', $author);
+   $statement->execute();
+   $result = $statement->fetchAll();
+   $statement->closeCursor();
+
+   return $result;
+}
 
 function getAuthors($isbn13)
 {

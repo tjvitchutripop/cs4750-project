@@ -59,6 +59,109 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')   // GET
 <body>  
 <?php include("header.php"); ?>
 <hr/>
+
+<div class="container">
+  
+  <div class="row justify-content-center">
+      <div class="col-md-7">
+
+          <div class="card mt-5">
+              <div class="card-header text-left">
+                  <h4>Search For A Book</h4>
+              </div>
+              <div class="card-body">
+              Title/Name/isbn13:
+                  <form action="" method="GET">
+                      <div class="row"> 
+                          <div class="col-md-8">
+                              <input type="text" name="search" value="<?php if(isset($_GET['search'])){echo $_GET['search'];} ?>" class="form-control">
+                          </div>
+                          <div class="col-md-4">
+                              <button type="submit" class="btn btn-primary">Search</button>
+                          </div>
+                      </div>
+                      <tr>
+                        <td colspan=1>
+                          <div class='mb-3'>
+                            Search Type:
+                            <select class='form-select' id='search_type' name='search_type' style="height:40px; width:100px">
+                              <option selected></option>
+                              <option value='title'>
+                                Title</option>
+                              <option value='isbn13'>
+                                isbn13</option>
+                              <option value='author'>
+                                Author</option>
+                            </select>
+                          </div>
+                        </td>
+                      </tr>
+                  </form>
+
+                  <div class="row">
+                      <div class="col-md-12">
+                          <hr>
+                          <?php 
+
+                              if(isset($_GET['search']))
+                              {
+                                  $search = $_GET['search'];
+                                  $selectOption = $_GET['search_type'];
+                                  if(empty($search) && empty($selectOption))
+                                  {
+                                      echo "You need to fill all Fields";
+                                  }
+                                  else {
+                                    if($selectOption == 'title') {
+                                      $query = getTitle($search);
+                                    }
+                                    if($selectOption == 'isbn13') {
+                                      $query = getBook($search);
+                                    }
+                                    if($selectOption == 'author') {
+                                      $query = getBookFromAuthors($search);
+                                    }
+                                    
+
+
+                                    
+
+                                    if($query)
+                                    {
+                                      foreach ($query as $req_info): ?>
+                                        <div class="col-md-2">
+                                          <div class="book">
+                                            <a href="book.php?isbn13=<?php echo urlencode($req_info['isbn13']); ?>" style="text-decoration: none; color: inherit;">
+                                                <img src="<?php echo htmlspecialchars($req_info['Thumbnail']); ?>" alt="Thumbnail">
+                                                <p class="title"><?php echo htmlspecialchars($req_info['title']); ?></p>
+                                            </a>
+                                          </div>
+                                        </div>
+                                      <?php endforeach; ?> 
+                                      <?php
+                                    }
+                                    else {
+                                      echo "No Books Found";
+                                    }
+
+                                  }
+                                  
+                              }
+                             
+                          ?>
+
+                      </div>
+                  </div>
+
+              </div>
+          </div>
+
+      </div>
+  </div>
+</div>
+</div>
+
+
 <div class="container">
   <h3>Explore a universe of books 🌌</h3>
   <form action="" method="GET">
@@ -72,6 +175,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')   // GET
         <button class="btn btn-primary btn-sm" type="submit">Sort</button>
       </div>
   </form>
+
+
+
+
   <div class="row justify-content-center">  
   <?php 
   // Sort the list of requests if the form is submitted
