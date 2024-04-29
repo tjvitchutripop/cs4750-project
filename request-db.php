@@ -41,20 +41,21 @@ function addRequests($reqDate, $roomNumber, $reqBy, $repairDesc, $reqPriority)
 // Given that the structure of Comemnt is comment_id, user_id, content, review_id, time_posted
 function addComment($userId, $content, $reviewId) {
    global $db;
-   $query = "INSERT INTO Comment (user_id, content, review_id, time_posted) VALUES (:userId, :content, :reviewId, NOW())";
+   $comment_id = mt_rand(100000000, 999999999);
+   $query = "INSERT INTO Comment (comment_id, user_id, content, review_id, time_posted) VALUES (:comment_id, :userId, :content, :reviewId, NOW())";
    $statement = $db->prepare($query);
+   $statement->bindValue(':comment_id', $comment_id);
    $statement->bindValue(':userId', $userId);
    $statement->bindValue(':content', $content);
    $statement->bindValue(':reviewId', $reviewId);
    $statement->execute();
-   $statement->closeCursor();
 }
 
 // Get Comments from Review ID (return with User First Name and Last Name)
 
 function getCommentsForReview($reviewId) {
    global $db;
-   $query = "SELECT c.*, u.first_name, u.last_name FROM Comment AS c JOIN User AS u ON c.user_id = u.user_id WHERE review_id = :reviewId";
+   $query = "SELECT c.*, u.first_name, u.last_name FROM Comment AS c JOIN User AS u ON c.user_id = u.user_id WHERE review_id = :reviewId ORDER BY time_posted DESC";
    $statement = $db->prepare($query);
    $statement->bindValue(':reviewId', $reviewId);
    $statement->execute();
@@ -142,7 +143,7 @@ function getAuthors($isbn13)
 function getReviews($isbn13)
 {
    global $db;
-   $query = "select * from Reviews natural join User where isbn13=:isbn13"; 
+   $query = "select * from Reviews natural join User where isbn13=:isbn13 order by time_posted desc"; 
    $statement = $db->prepare($query);    // compile
    $statement->bindValue(':isbn13', $isbn13);
    $statement->execute();
@@ -208,6 +209,16 @@ function updateRequest($reqId, $reqDate, $roomNumber, $reqBy, $repairDesc, $reqP
 
 
 
+}
+
+function deleteComment($comment_id)
+{
+   global $db;
+   $query = "delete from Comment where comment_id=:comment_id"; 
+   $statement = $db->prepare($query);    // compile
+   $statement->bindValue(':comment_id', $comment_id);
+   $statement->execute();
+   $statement->closeCursor();
 }
 
 function deleteRequest($reqId)
