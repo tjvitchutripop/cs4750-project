@@ -263,8 +263,8 @@ function getBookReads($isbn13)
 
 function addUser($firstName, $lastName, $userId, $password) {
    global $db;
-   $query = "INSERT INTO User (user_id, user_password, profile_picture, first_name, last_name) 
-   VALUES (:userId, :password, 'profile_ex.jpg', :firstName, :lastName)";  
+   $query = "INSERT INTO User (user_id, user_password, profile_picture, first_name, last_name, admin) 
+   VALUES (:userId, :password, 'profile_ex.jpg', :firstName, :lastName, 0)";  
    
    try {
       // $db->beginTransaction();

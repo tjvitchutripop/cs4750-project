@@ -47,7 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 <label for="rating">Rating:</label>
                 <select class="form-control" name="rating" id="rating">
                     <?php for ($i = 1; $i <= 5; $i++): ?>
-                        <option value="<?php echo $i; ?>" <?php echo (isset($review['number_of_stars']) && $i == $review['number_of_stars']) ? 'selected' : ''; ?>>
+                        <option value="<?php echo $i; ?>" <?php echo (isset($review['number_of_stars']) && $i === $review['number_of_stars']) ? "selected" : ''; ?>>
                             <?php echo $i; ?>
                         </option>
                     <?php endfor; ?>
