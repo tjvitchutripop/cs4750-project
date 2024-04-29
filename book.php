@@ -129,7 +129,15 @@ if(isset($_POST['unread']))
 <?php foreach($reviews as $review) : ?>
     <div class="card shadow-sm" style="margin-top:10px;">
         <div class="card-body">
+            <div style="display:flex; justify-content:space-between;">
             <h5 class="card-title mb-2"><b><?php echo $review["first_name"]; ?> <?php echo $review["last_name"]; ?></b> says</h5>
+            <!-- If this is the user's review or if the user is an admin delete buttons is visible -->
+            <?php if(isset($_SESSION['userId']) && $review["user_id"] == $_SESSION['userId'] || checkAdmin($_SESSION['userId'])) : ?>
+                <form action="delete-review.php?review_id=<?php echo $review["review_id"]; ?>" method="post">
+                    <button type="submit" class="btn btn-danger"><i class="bi bi-trash"></i></button>
+                </form>
+            <?php endif; ?>
+            </div>
             <!-- Check if user has rated -->
             <?php if($review["number_of_stars"]) : ?>
                 <h6 class="card-subtitle mb-2 text-muted">Rating: <?php echo getStarRating($review["number_of_stars"]); ?> (<?php echo $review["number_of_stars"]; ?> / 5)</h6>
@@ -177,7 +185,7 @@ if(isset($_POST['unread']))
                 <div style="display:flex; justify-content:space-between;">
                 <h5 class="card-title mb-2"><b><?php echo $comment["first_name"]; ?> <?php echo $comment["last_name"]; ?></b> replies</h5>
                 <!-- If this is the user's comment, delete button is visible -->
-                <?php if(isset($_SESSION['userId']) && $comment["user_id"] == $_SESSION['userId']) : ?>
+                <?php if(isset($_SESSION['userId']) && $comment["user_id"] == $_SESSION['userId'] || checkAdmin($_SESSION['userId'])) : ?>
                     <form action="book.php?isbn13=<?php echo htmlspecialchars($_GET["isbn13"]); ?>" method="post">
                         <input type="hidden" name="comment_id" value="<?php echo $comment["comment_id"]; ?>">
                         <button type="submit" class="btn btn-danger"><i class="bi bi-trash"></i></button>

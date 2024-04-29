@@ -51,6 +51,17 @@ function addComment($userId, $content, $reviewId) {
    $statement->execute();
 }
 
+function checkAdmin($userId) {
+   global $db;
+   $query = "SELECT admin FROM User WHERE user_id = :userId";
+   $statement = $db->prepare($query);
+   $statement->bindValue(':userId', $userId);
+   $statement->execute();
+   $result = $statement->fetch();
+   $statement->closeCursor();
+   return $result['admin'];
+}
+
 // Get Comments from Review ID (return with User First Name and Last Name)
 
 function getCommentsForReview($reviewId) {
@@ -312,8 +323,8 @@ function getNumLikes($review_id) {
 
 function addUser($firstName, $lastName, $userId, $password) {
    global $db;
-   $query = "INSERT INTO User (user_id, user_password, profile_picture, first_name, last_name, admin) 
-   VALUES (:userId, :password, 'profile_ex.jpg', :firstName, :lastName, 0)";  
+   $query = "INSERT INTO User (user_id, user_password, profile_picture, first_name, last_name, admin)
+   VALUES (:userId, :password, 'profile_ex.jpg', :firstName, :lastName, :admin)";  
    
    try {
       // $db->beginTransaction();
@@ -324,6 +335,7 @@ function addUser($firstName, $lastName, $userId, $password) {
       $statement->bindValue(':password', $password);
       $statement->bindValue(':firstName', $firstName);
       $statement->bindValue(':lastName', $lastName);
+      $statement->bindValue(':admin', $admin);
 
       $statement->execute();
       $statement->closeCursor();

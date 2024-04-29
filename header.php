@@ -17,6 +17,12 @@ if (session_status() == PHP_SESSION_NONE) {
       </button>
       <div class="collapse navbar-collapse" id="collapsibleNavbar">
         <ul class="navbar-nav ms-auto">
+          <!-- If admin, show admin page -->
+          <?php if (checkAdmin($_SESSION['userId'])) { ?> 
+            <li class="nav-item">
+              <a class="nav-link" href="admin.php">Admin</a>
+            </li>
+          <?php } ?>
           <!-- check if currently logged in, display Log out button 
                otherwise, display sign up and log in buttons -->
           <?php if (!isset($_SESSION['userId'])) { ?>              
