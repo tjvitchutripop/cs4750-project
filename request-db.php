@@ -236,6 +236,7 @@ function addUser($firstName, $lastName, $userId, $password) {
 
       $statement->execute();
       $statement->closeCursor();
+      return true;
    } catch (PDOException $e) {
       $error_message = $e->getMessage();
       echo "<p>Error inserting user into database: $error_message </p>";
