@@ -321,7 +321,7 @@ function getNumLikes($review_id) {
    return $result;
 }
 
-function addUser($firstName, $lastName, $userId, $password) {
+function addUser($firstName, $lastName, $userId, $password, $admin) {
    global $db;
    $query = "INSERT INTO User (user_id, user_password, profile_picture, first_name, last_name, admin)
    VALUES (:userId, :password, 'profile_ex.jpg', :firstName, :lastName, :admin)";  
