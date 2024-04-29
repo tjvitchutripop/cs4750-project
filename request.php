@@ -60,11 +60,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')   // GET
 <?php include("header.php"); ?>
 <hr/>
 
+
 <div class="container">
-  
+  <h3>Explore a universe of books 🌌</h3>  
   <div class="row justify-content-center">
       <div class="col-md-7">
-
           <div class="card mt-5">
               <div class="card-header text-left">
                   <h4>Search For A Book</h4>
@@ -97,12 +97,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')   // GET
                         </td>
                       </tr>
                   </form>
-
                   <div class="row">
                       <div class="col-md-12">
                           <hr>
                           <?php 
-
                               if(isset($_GET['search']))
                               {
                                   $search = $_GET['search'];
@@ -121,11 +119,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')   // GET
                                     if($selectOption == 'author') {
                                       $query = getBookFromAuthors($search);
                                     }
-                                    
-
-
-                                    
-
                                     if($query)
                                     {
                                       foreach ($query as $req_info): ?>
@@ -144,27 +137,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')   // GET
                                       echo "No Books Found";
                                     }
 
-                                  }
-                                  
-                              }
-                             
+                                  }      
+                              }       
                           ?>
-
                       </div>
                   </div>
-
               </div>
           </div>
-
       </div>
   </div>
-</div>
-</div>
-
-
-<div class="container">
-  <h3>Explore a universe of books 🌌</h3>
-  <form action="" method="GET">
+  <form action="" method="GET" style="margin-top: 20px;">
       <div style="display:flex;">
         <label for="sort" style="margin-top:5px;">Sort by:</label>
         <select class="form-select" style="width: 200px; margin-left:10px; margin-right:5px;" name="sort" id="sort">
