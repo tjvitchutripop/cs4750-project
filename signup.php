@@ -10,9 +10,14 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     } elseif ($_POST['password'] !== $_POST['confirm_password']) {
         echo "Passwords do not match.";
     } else {
-        addUser($_POST['first_name'], $_POST['last_name'], $_POST['userId'], $_POST['password']);
-        header("Location: success.php");
-        exit();
+      $userAdded = addUser($_POST['first_name'], $_POST['last_name'], $_POST['userId'], $_POST['password']);
+      if ($userAdded) {
+          header("Location: success.php");  // Redirect to success page if user is added
+          exit();
+      } else {
+          header("Location: fail.php");  // Redirect to fail page if user is not added
+          exit();
+      }
     }
 }
 ?>
