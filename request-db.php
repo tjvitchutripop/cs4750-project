@@ -195,12 +195,12 @@ function validateUser($userId, $password) {
 function getReadingLists($user_id) {
    global $db;
    $query = "SELECT b.*, rl.reading_list_id, rl.reading_list_title
-             FROM Books AS b 
-             JOIN Reading_list_isbn13 AS rli ON b.isbn13 = rli.isbn13 
-             JOIN Reading_list AS rl ON rli.reading_list_id = rl.reading_list_id 
+             FROM Reading_list AS rl
+             LEFT JOIN Reading_list_isbn13 AS rli ON rl.reading_list_id = rli.reading_list_id
+             LEFT JOIN Books AS b ON rli.isbn13 = b.isbn13
              JOIN Creates AS c ON rl.reading_list_id = c.reading_list_id 
              WHERE c.user_id = :user_id"; 
-   
+
    $statement = $db->prepare($query);
    $statement->bindValue(':user_id', $user_id, PDO::PARAM_INT);
    $statement->execute();
@@ -219,11 +219,50 @@ function getReadingLists($user_id) {
                'books' => array()
            );
        }
-       $readingLists[$readingListId]['books'][] = $book;
+       // Only add the book if it exists (i.e., it's not NULL)
+       if ($book['isbn13'] !== null) {
+           $readingLists[$readingListId]['books'][] = $book;
+       }
    }
 
    return $readingLists;
 }
+
+function renameReadingList($user_id, $reading_list_id, $new_title) {
+   global $db;
+   $query = "UPDATE Reading_list SET reading_list_title = :new_title WHERE reading_list_id = :reading_list_id";
+   $statement = $db->prepare($query);
+   $statement->bindValue(':new_title', $new_title);
+   $statement->bindValue(':reading_list_id', $reading_list_id);
+   $statement->execute();
+   $statement->closeCursor();
+}
+
+function deleteReadingList($user_id, $reading_list_id) {
+   global $db;
+   // delete from Creates first to avoid foreign key constraint violation
+   $queryCreates = "DELETE FROM Creates WHERE user_id = :user_id AND reading_list_id = :reading_list_id";
+   $statementCreates = $db->prepare($queryCreates);
+   $statementCreates->bindValue(':user_id', $user_id);
+   $statementCreates->bindValue(':reading_list_id', $reading_list_id);
+   $statementCreates->execute();
+   $statementCreates->closeCursor();
+
+   // delete from Reading_list_isbn13
+   $queryReadingListIsbn13 = "DELETE FROM Reading_list_isbn13 WHERE reading_list_id = :reading_list_id";
+   $statementReadingListIsbn13 = $db->prepare($queryReadingListIsbn13);
+   $statementReadingListIsbn13->bindValue(':reading_list_id', $reading_list_id);
+   $statementReadingListIsbn13->execute();
+   $statementReadingListIsbn13->closeCursor();
+
+   // delete from Reading_list
+   $queryReadingList = "DELETE FROM Reading_list WHERE reading_list_id = :reading_list_id";
+   $statementReadingList = $db->prepare($queryReadingList);
+   $statementReadingList->bindValue(':reading_list_id', $reading_list_id);
+   $statementReadingList->execute();
+   $statementReadingList->closeCursor();
+}
+
 
 function getReadingListID_Title($user_id) {
    global $db;
@@ -304,6 +343,27 @@ function addToReadingList($user_id, $isbn13, $reading_list_id) {
    $statementInsert->bindValue(':isbn13', $isbn13);
    $statementInsert->execute();
    $statementInsert->closeCursor();
+}
+
+function createReadingList($user_id, $reading_list_title) {
+    global $db;
+   // generate randome 8 digit number for reading list id
+   $reading_list_id = mt_rand(10000000, 99999999);
+
+   $query = "INSERT INTO Reading_list (reading_list_id, reading_list_title) VALUES (:reading_list_id, :reading_list_title)";
+   $statement = $db->prepare($query);
+   $statement->bindValue(':reading_list_id', $reading_list_id);
+   $statement->bindValue(':reading_list_title', $reading_list_title);
+   $statement->execute();
+   $statement->closeCursor();
+
+
+    $queryCreates = "INSERT INTO Creates (user_id, reading_list_id) VALUES (:user_id, :reading_list_id)";
+    $statementCreates = $db->prepare($queryCreates);
+    $statementCreates->bindValue(':user_id', $user_id);
+    $statementCreates->bindValue(':reading_list_id', $reading_list_id);
+    $statementCreates->execute();
+    $statementCreates->closeCursor();
 }
 
 function removeFromReadingList($user_id, $isbn13, $reading_list_id) {
