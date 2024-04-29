@@ -38,6 +38,31 @@ function addRequests($reqDate, $roomNumber, $reqBy, $repairDesc, $reqPriority)
 
 }
 
+// Given that the structure of Comemnt is comment_id, user_id, content, review_id, time_posted
+function addComment($userId, $content, $reviewId) {
+   global $db;
+   $query = "INSERT INTO Comment (user_id, content, review_id, time_posted) VALUES (:userId, :content, :reviewId, NOW())";
+   $statement = $db->prepare($query);
+   $statement->bindValue(':userId', $userId);
+   $statement->bindValue(':content', $content);
+   $statement->bindValue(':reviewId', $reviewId);
+   $statement->execute();
+   $statement->closeCursor();
+}
+
+// Get Comments from Review ID (return with User First Name and Last Name)
+
+function getCommentsForReview($reviewId) {
+   global $db;
+   $query = "SELECT c.*, u.first_name, u.last_name FROM Comment AS c JOIN User AS u ON c.user_id = u.user_id WHERE review_id = :reviewId";
+   $statement = $db->prepare($query);
+   $statement->bindValue(':reviewId', $reviewId);
+   $statement->execute();
+   $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+   $statement->closeCursor();
+   return $result;
+}
+
 function getAllRequests()
 {
    global $db;
