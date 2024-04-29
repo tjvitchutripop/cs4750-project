@@ -14,10 +14,21 @@ if(isset($_POST['isbn13_to_remove']) && isset($_SESSION['userId'])&& isset($_POS
     removeFromReadingList($_SESSION['userId'], $_POST['isbn13_to_remove'], $_POST['reading_list_id']);
 }
 
+if(isset($_POST['reading_list_id_to_remove']) && isset($_SESSION['userId'])) {
+    deleteReadingList($_SESSION['userId'], $_POST['reading_list_id_to_remove']);
+}
+
 
 if(isset($_POST['review_id_to_remove']) && isset($_SESSION['userId'])) {
     removeReview($_SESSION['userId'], $_POST['review_id_to_remove']);
     $userReviews = getUserReviews($_SESSION['userId']);
+}
+
+if(isset($_POST['reading_list_id']) && isset($_POST['reading_list_title']) && isset($_SESSION['userId'])) {
+    renameReadingList($_SESSION['userId'], $_POST['reading_list_id'], $_POST['reading_list_title']);
+}
+else if(isset($_POST['reading_list_title']) && isset($_SESSION['userId'])) {
+    createReadingList($_SESSION['userId'], $_POST['reading_list_title']);
 }
 
 $readingLists = getReadingLists($_SESSION['userId']);
@@ -34,8 +45,8 @@ $user = getUserName($_SESSION['userId']);
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <title>Literary Loop | Your Account</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
-    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
   <link rel="stylesheet" href="styles/main.css">
 </head>
@@ -44,13 +55,81 @@ $user = getUserName($_SESSION['userId']);
 
 <main class="container" style="margin-top:80px;">
         <h1> Welcome back, <b><?php echo htmlspecialchars($user['first_name']); ?></b>!</h1>
+        <p>🪪 Your User ID is <b><?php echo htmlspecialchars($_SESSION['userId']); ?></b></p>
         <section id="reading-list" style="margin-top:30px">
+        <div style="display:flex; justify-content:space-between;">
             <h3><b>Reading Lists 📚</b></h3>
-            <div class="book-list">
+            <!-- Button trigger modal -->
+            <button type="button" class="btn btn-primary " data-bs-toggle="modal" data-bs-target="#exampleModal">
+            Create Reading List
+            </button>
+
+            <!-- Modal -->
+            <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Create Reading Lists</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form action="account.php" method="post">
+                        <div class="mb-3">
+                            <label for="reading_list_title" class="form-label">Reading List Title</label>
+                            <input type="text" class="form-control" id="reading_list_title" name="reading_list_title">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Create</button>
+                    </form>
+                </div>
+                </div>
+            </div>
+            </div>
+        </div> 
+        
+            <div class="book-list" style="margin-top:10px">
             <?php foreach ($readingLists as $readingList): ?>
-                <div class="reading-list">
-                    <h4 style="color:gray;"><?php echo htmlspecialchars($readingList['reading_list_title']); ?></h4>
+                    <div class="row">
+                        <div class="col-sm-11">
+                            <h4 style="color:gray;"><?php echo htmlspecialchars($readingList['reading_list_title']); ?></h4>
+                        </div>
+                        <div class="col-sm-1" style="display:flex; height:23px">
+                            <!-- Rename Reading List Modal -->
+                            <button style="margin-right:5px;" type="button" class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#renameModal<?php echo htmlspecialchars($readingList['reading_list_id']); ?>">
+                            <i class="bi bi-pencil-square"></i>
+                            </button>
+                            <form action="account.php" method="post">
+                                <input type="hidden" name="reading_list_id_to_remove" value="<?php echo htmlspecialchars($readingList['reading_list_id']); ?>">
+                                <button type="submit" class="btn btn-danger btn-sm"><i class="bi bi-trash"></i></button>
+                            </form>
+                        </div>
+                    </div>
+                        <!-- Modal -->
+                        <div class="modal fade" id="renameModal<?php echo htmlspecialchars($readingList['reading_list_id']); ?>" tabindex="-1" aria-labelledby="renameModalLabel" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h1 class="modal-title fs-5" id="renameModalLabel">Rename Reading List</h1>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                    <form action="account.php" method="post">
+                                        <div class="mb-3">
+                                            <label for="reading_list_title" class="form-label">Reading List Title</label>
+                                            <input type="text" class="form-control" id="reading_list_title" name="reading_list_title" value="<?php echo htmlspecialchars($readingList['reading_list_title']); ?>">
+                                            <input type="hidden" name="reading_list_id" value="<?php echo htmlspecialchars($readingList['reading_list_id']); ?>">
+                                        </div>
+                                        <button type="submit" class="btn btn-primary">Rename</button>
+                                    </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                     <div class="row">  
+                        <!-- If empty display message saying No Books in Reading List -->
+                        <?php if (empty($readingList['books'])): ?>
+                            <p>There are currently no books in this reading list 😓</p>
+                        <?php endif; ?>
                         <?php foreach ($readingList['books'] as $book): ?>
                             <div class="col-md-2">
                              <div style="text-align:center">
@@ -68,7 +147,8 @@ $user = getUserName($_SESSION['userId']);
                         </div>
                         <?php endforeach; ?>
                     </div>
-                </div>
+                    <!-- Line -->
+                    <hr>
             <?php endforeach; ?>
 
             </div>
