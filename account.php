@@ -179,7 +179,9 @@ $readList = getBookReadByUser($_SESSION['userId']);
             <div class="card mb-3 shadow-sm">
             <div class="row">
                 <div class="col-sm-1">
+                <a href="book.php?isbn13=<?php echo htmlspecialchars($review['isbn13']); ?>">
                 <img src="<?php echo htmlspecialchars($review['Thumbnail']); ?>" alt="Book Thumbnail" style="width:100px; height:150px;">
+                </a>
                 </div>
                 <div class="col-sm-10">
                     <div style="margin-top:60px; margin-left:10px;">

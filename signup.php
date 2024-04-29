@@ -11,13 +11,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         echo "Passwords do not match.";
     } else {
       $userAdded = addUser($_POST['first_name'], $_POST['last_name'], $_POST['userId'], $_POST['password']);
-      if ($userAdded) {
-          header("Location: success.php");  // Redirect to success page if user is added
-          exit();
-      } else {
-          header("Location: fail.php");  // Redirect to fail page if user is not added
-          exit();
-      }
+      header("Location: index.php");  // Redirect to success page if user is added
+      exit();
     }
 }
 ?>
@@ -29,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>Liteary Loop | Sign Up</title>
+  <title>Literary Loop | Sign Up</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
   <link rel="stylesheet" href="styles/main.css">
