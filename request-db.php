@@ -127,6 +127,19 @@ function getReviews($isbn13)
    return $result;
 }
 
+function getBookReadByUser($user_id)
+{
+   global $db;
+   $query = "SELECT * From `Reads` NATURAL JOIN Books WHERE user_id = :user_id;"; 
+   $statement = $db->prepare($query);    // compile
+   $statement->bindValue(':user_id', $user_id);
+   $statement->execute();
+   $result = $statement->fetchAll();
+   $statement->closeCursor();
+
+   return $result;
+}
+
 // {
 //    global $db;
 //    $query = "select * from Books";    
