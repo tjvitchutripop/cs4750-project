@@ -4,6 +4,8 @@ session_start();
 require("connect-db.php");
 require("request-db.php");
 
+$admin_key = "password";
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (!filter_var($_POST['userId'], FILTER_VALIDATE_INT) || strlen((string)$_POST['userId']) != 9) {
         // echo "User ID must be a 9-digit number.";
@@ -12,9 +14,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }  elseif ($_POST['password'] !== $_POST['confirm_password']) {
         // echo "Passwords do not match.";
         $_SESSION['errorMessage'][] = "Passwords do not match.";
-    } else {
-      $userAdded = addUser($_POST['first_name'], $_POST['last_name'], $_POST['userId'], $_POST['password']);
-      header("Location: index.php");  // Redirect to success page if user is added
+    } 
+    elseif ($_POST['admin']!= "" && $_POST['admin'] !== $admin_key) {
+        $_SESSION['errorMessage'][] = "Invalid admin key.";
+    }
+    elseif ($_POST['admin']!= "" && $_POST['admin'] === $admin_key) {
+      $userAdded = addUser($_POST['first_name'], $_POST['last_name'], $_POST['userId'], $_POST['password'], 1);
+      header("Location: index.php");  // Redirect to page if user is added
+      exit();
+  }
+    else {
+      $userAdded = addUser($_POST['first_name'], $_POST['last_name'], $_POST['userId'], $_POST['password'], 0);
+      header("Location: index.php");  // Redirect to page if user is added
       exit();
     }
 }
@@ -96,6 +107,9 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <label for="confirm_password">Confirm Password</label>
             <input type="password" class="form-control" name="confirm_password" placeholder="Confirm password" required> 
           </div>
+          <div class="form-group">
+            <label for="admin">If you're an admin, please fill out the admin key:</label>
+            <input type="password" class="form-control" name="admin" placeholder="Admin Key">
           <button type="submit" class="btn btn-primary mt-3">Sign up</button>
         </form>
 
