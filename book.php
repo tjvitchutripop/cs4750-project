@@ -26,6 +26,7 @@ if(isset($_POST['commentContent']) && isset($_POST['review_id'])) {
     header("Location: book.php?isbn13=".$_GET["isbn13"]);
 }
 
+
 ?>
 
 <!DOCTYPE html>
@@ -63,6 +64,21 @@ if(isset($_POST['commentContent']) && isset($_POST['review_id'])) {
             </ul>
         </div>
         <?php endif; ?>
+        <div>
+            <form action="" method="POST">
+                <div class="row"> 
+                    <div class="col-md-4">
+                        <input type='submit' name='submit' value='I Have Read This Book' style="width:15vw;"/>
+                        <?php
+                        if(isset($_POST['submit']))
+                        {
+                            addReadThisBook($_SESSION['userId'], $_GET["isbn13"]);
+                        }
+                        ?>
+                    </div>
+                </div>
+            </form>
+        </div>
     </div>
     <div class="col-sm-8">
         <h1><?php echo $book["title"]; ?></h1>

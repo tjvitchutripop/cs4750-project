@@ -34,6 +34,7 @@ else if(isset($_POST['reading_list_title']) && isset($_SESSION['userId'])) {
 $readingLists = getReadingLists($_SESSION['userId']);
 $userReviews = getUserReviews($_SESSION['userId']);
 $user = getUserName($_SESSION['userId']);
+$readList = getBookReadByUser($_SESSION['userId']);
 
 
 ?>
@@ -151,6 +152,23 @@ $user = getUserName($_SESSION['userId']);
                     <hr>
             <?php endforeach; ?>
 
+            </div>
+
+            <div class="row">
+                <h3><b>Books You've Read</b></h3>  
+                <?php if (empty($readList)): ?>
+                    <p>You Have Read No Books</p>
+                <?php endif; ?>
+                <?php foreach ($readList as $book): ?>
+                    <div class="col-md-2">
+                        <div style="text-align:center">
+                        <a href="book.php?isbn13=<?php echo htmlspecialchars($book['isbn13']); ?>">
+                            <img src="<?php echo htmlspecialchars($book['Thumbnail']); ?>" alt="Book Thumbnail">
+                        </a>
+                        <p style="text-align:center"><?php echo htmlspecialchars($book['title']); ?></p>
+                    </div>
+                </div>
+                <?php endforeach; ?>
             </div>
         </section>
 
