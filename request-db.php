@@ -62,6 +62,19 @@ function getBook($isbn13)
 
    return $result;
 }
+
+function getBookbyid($isbn13)  
+{
+   global $db;
+   $query = "select * from Books where isbn13=:isbn13"; 
+   $statement = $db->prepare($query);    // compile
+   $statement->bindValue(':isbn13', $isbn13);
+   $statement->execute();
+   $result = $statement->fetchAll();
+   $statement->closeCursor();
+
+   return $result;
+}
 function getTitle($title)  
 {
    global $db;
@@ -163,6 +176,42 @@ function deleteRequest($reqId)
 {
 
     
+}
+
+function addReadThisBook($userId, $isbn13) {
+   global $db;
+   
+   $db->beginTransaction();
+   
+   try {
+      $queryRating = "INSERT INTO Reads (user_id, isbn13) VALUES (:userId, :isbn13) ON DUPLICATE KEY UPDATE user_id = :user_id";
+      $statementRating = $db->prepare($queryRating);
+      $statementRating->bindValue(':userId', $userId);
+      $statementRating->bindValue(':isbn13', $isbn13);
+      $statementRating->execute();
+      $statementRating->closeCursor();
+
+
+       $db->commit();
+   } catch (PDOException $e) {
+       $db->rollback();
+       $error_message = $e->getMessage();
+       error_log("Error adding Read Book: $error_message");
+       throw $e;
+   }
+}
+
+function getBookReads($isbn13)
+{
+   global $db;
+   $query = "SELECT COUNT(user_id) As num From `Reads` WHERE isbn13 =:isbn13;";
+   $statement = $db->prepare($query);    // compile
+   $statement->bindValue(':isbn13', $isbn13);
+   $statement->execute();
+   $result = $statement->fetch();
+   $statement->closeCursor();
+
+   return $result;
 }
 
 function addUser($firstName, $lastName, $userId, $password) {

@@ -10,6 +10,7 @@ $book = getBook($_GET["isbn13"]);
 $authors = getAuthors($_GET["isbn13"]);
 $reviews = getReviews($_GET["isbn13"]);
 $reading_lists = getReadingListID_Title($_SESSION['userId']);
+$numberofreads = getBookReads($_GET["isbn13"]);
 if(isset($_POST['isbn13_to_add']) && isset($_SESSION['userId']) && isset($_POST['reading_list_id'])) {
     // Function to add book to reading list needs to be implemented in request-db.php
     addToReadingList($_SESSION['userId'], $_POST['isbn13_to_add'], $_POST['reading_list_id']);
@@ -57,6 +58,7 @@ if(isset($_POST['isbn13_to_add']) && isset($_SESSION['userId']) && isset($_POST[
         <?php endforeach; ?>
         <h5>Average Rating: <?php echo $book["Average_rating"]; ?> / 5</h5>
         <p><?php echo $book["Description"]; ?></p>
+        <h5>How many people have Read this Book? <?php echo $numberofreads["num"]; ?></h5>
         </div>
   </div>
 
