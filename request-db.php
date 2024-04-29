@@ -424,6 +424,19 @@ function getUserReviews($user_id) {
    return $result;
 }
 
+function isBookRead($user_id, $isbn13) {
+   global $db;
+   $query = "SELECT * FROM Reads WHERE user_id = :user_id AND isbn13 = :isbn13";
+   $statement = $db->prepare($query);
+   $statement->bindValue(':user_id', $user_id);
+   $statement->bindValue(':isbn13', $isbn13);
+   $statement->execute();
+   $result = $statement->fetch();
+   $statement->closeCursor();
+
+   return $result;
+}
+
 
 function addToReadingList($user_id, $isbn13, $reading_list_id) {
    global $db;

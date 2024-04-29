@@ -72,6 +72,8 @@ if(isset($_POST['comment_id'])) {
                 <?php endforeach; ?>
             </ul>
         </div>
+        <!-- check if book is read by user -->
+        
         <form action="" method="POST">
             <input class="btn btn-success mt-2" type='submit' name='submit' value='Mark as Read' />
             <?php
@@ -81,6 +83,7 @@ if(isset($_POST['comment_id'])) {
             }
             ?>
         </form>
+
         <?php endif; ?>
     </div>
     <div class="col-sm-8">
