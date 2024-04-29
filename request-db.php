@@ -178,26 +178,19 @@ function deleteRequest($reqId)
     
 }
 
-function addReadThisBook($userId, $isbn13) {
+function addReadThisBook($user_id, $isbn13) {
    global $db;
-   
-   $db->beginTransaction();
-   
+   $query = "INSERT INTO `Reads` (user_id, isbn13) VALUES (:user_id, :isbn13) ON DUPLICATE KEY UPDATE user_id = :user_id";   
    try {
-      $queryRating = "INSERT INTO Reads (user_id, isbn13) VALUES (:userId, :isbn13) ON DUPLICATE KEY UPDATE user_id = :user_id";
-      $statementRating = $db->prepare($queryRating);
-      $statementRating->bindValue(':userId', $userId);
-      $statementRating->bindValue(':isbn13', $isbn13);
-      $statementRating->execute();
-      $statementRating->closeCursor();
+      $statement = $db->prepare($query);
+      $statement->bindValue(':user_id', $user_id);
+      $statement->bindValue(':isbn13', $isbn13);
+      $statement->execute();
+      $statement->closeCursor();
 
-
-       $db->commit();
    } catch (PDOException $e) {
-       $db->rollback();
-       $error_message = $e->getMessage();
-       error_log("Error adding Read Book: $error_message");
-       throw $e;
+      $error_message = $e->getMessage();
+      echo "<p>Error inserting user into database: $error_message </p>";
    }
 }
 

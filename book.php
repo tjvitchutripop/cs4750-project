@@ -16,6 +16,7 @@ if(isset($_POST['isbn13_to_add']) && isset($_SESSION['userId']) && isset($_POST[
     addToReadingList($_SESSION['userId'], $_POST['isbn13_to_add'], $_POST['reading_list_id']);
 }
 
+
 ?>
 
 <!DOCTYPE html>
@@ -49,6 +50,21 @@ if(isset($_POST['isbn13_to_add']) && isset($_SESSION['userId']) && isset($_POST[
                     </form>
                 <?php endforeach; ?>
             </ul>
+        </div>
+        <div>
+            <form action="" method="POST">
+                <div class="row"> 
+                    <div class="col-md-4">
+                        <input type='submit' name='submit' value='I Have Read This Book' style="width:15vw;"/>
+                        <?php
+                        if(isset($_POST['submit']))
+                        {
+                            addReadThisBook($_SESSION['userId'], $_GET["isbn13"]);
+                        }
+                        ?>
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
     <div class="col-sm-8">
