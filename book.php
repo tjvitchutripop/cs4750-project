@@ -24,13 +24,21 @@ if(isset($_POST['isbn13_to_add']) && isset($_SESSION['userId']) && isset($_POST[
 }
 if(isset($_POST['commentContent']) && isset($_POST['review_id'])) {
     addComment($_SESSION['userId'], $_POST['commentContent'],$_POST['review_id']);
-    // check if the comment is added
-    echo $_POST['commentContent'];
     header("Location: book.php?isbn13=".$_GET["isbn13"]);
 }
 // handle delete comments
 if(isset($_POST['comment_id'])) {
     deleteComment($_POST['comment_id']);
+    header("Location: book.php?isbn13=".$_GET["isbn13"]);
+}
+if(isset($_POST['submit']))
+{
+    addReadThisBook($_SESSION['userId'], $_GET["isbn13"]);
+    header("Location: book.php?isbn13=".$_GET["isbn13"]);
+}
+if(isset($_POST['unread']))
+{
+    removeReadThisBook($_SESSION['userId'], $_GET["isbn13"]);
     header("Location: book.php?isbn13=".$_GET["isbn13"]);
 }
 
@@ -73,16 +81,16 @@ if(isset($_POST['comment_id'])) {
             </ul>
         </div>
         <!-- check if book is read by user -->
-        
+        <?php if(!isBookRead($_SESSION['userId'], $_GET["isbn13"])) : ?>
         <form action="" method="POST">
             <input class="btn btn-success mt-2" type='submit' name='submit' value='Mark as Read' />
-            <?php
-            if(isset($_POST['submit']))
-            {
-                addReadThisBook($_SESSION['userId'], $_GET["isbn13"]);
-            }
-            ?>
         </form>
+        <!-- otherwise display mark as unread -->
+        <?php else : ?>
+        <form action="" method="POST">
+            <input class="btn btn-danger mt-2" type='submit' name='unread' value='Mark as Unread' />
+        </form>
+        <?php endif; ?>
 
         <?php endif; ?>
     </div>

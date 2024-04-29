@@ -229,7 +229,7 @@ function deleteRequest($reqId)
 
 function addReadThisBook($user_id, $isbn13) {
    global $db;
-   $query = "INSERT INTO `Reads` (user_id, isbn13) VALUES (:user_id, :isbn13) ON DUPLICATE KEY UPDATE user_id = :user_id";   
+   $query = "INSERT INTO `Reads` (user_id, isbn13) VALUES (:user_id, :isbn13);";
    try {
       $statement = $db->prepare($query);
       $statement->bindValue(':user_id', $user_id);
@@ -427,15 +427,16 @@ function getUserReviews($user_id) {
 
 function isBookRead($user_id, $isbn13) {
    global $db;
-   $query = "SELECT * FROM Reads WHERE user_id = :user_id AND isbn13 = :isbn13";
+   $query = "SELECT * FROM `Reads` WHERE user_id = :user_id AND isbn13 = :isbn13";
    $statement = $db->prepare($query);
    $statement->bindValue(':user_id', $user_id);
    $statement->bindValue(':isbn13', $isbn13);
    $statement->execute();
    $result = $statement->fetch();
    $statement->closeCursor();
-
-   return $result;
+   
+   debug_to_console($result ? "TRUE" : "FALSE");
+   return $result ? true : false;
 }
 
 
@@ -510,6 +511,16 @@ function removeFromReadingList($user_id, $isbn13, $reading_list_id) {
         $error_message = $e->getMessage();
         error_log("Error removing book from reading list: $error_message");
     }
+}
+
+function removeReadThisBook($user_id, $isbn13) {
+   global $db;
+   $query = "DELETE FROM `Reads` WHERE user_id = :user_id AND isbn13 = :isbn13";
+   $statement = $db->prepare($query);
+   $statement->bindValue(':user_id', $user_id);
+   $statement->bindValue(':isbn13', $isbn13);
+   $statement->execute();
+   $statement->closeCursor();
 }
 
 function addReview($userId, $isbn13, $rating, $reviewContent) {
