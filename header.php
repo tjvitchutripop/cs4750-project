@@ -10,7 +10,7 @@ if (!isset($_SESSION['userId'])) {
 <header>  
   <nav class="navbar fixed-top navbar-expand-md navbar-dark bg-dark">
     <div class="container-fluid">            
-      <a class="navbar-brand" href="request.php">Literary Loop 📖♾️</a>
+      <a class="navbar-brand" href="index.php">Literary Loop 📖♾️</a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#collapsibleNavbar" aria-controls="collapsibleNavbar" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>

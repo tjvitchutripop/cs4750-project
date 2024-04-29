@@ -54,6 +54,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')   // GET
   <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">  
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">  
   <link rel="stylesheet" href="maintenance-system.css">  
+
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
 </head>
 
 <body>  
@@ -147,6 +152,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')   // GET
           </div>
       </div>
   </div>
+
   <form action="" method="GET" style="margin-top: 20px;">
       <div style="display:flex;">
         <label for="sort" style="margin-top:5px;">Sort by:</label>
@@ -159,8 +165,35 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')   // GET
       </div>
   </form>
 
+  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#filterModal">
+    Filter
+  </button>
 
-
+  <div class="modal fade" id="filterModal" tabindex="-1" role="dialog" aria-labelledby="filterModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="filterModalLabel">Filter Options</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form action="" method="GET">
+            <div class="form-group">
+              <label for="sort">Sort by:</label>
+              <select class="form-control" name="sort" id="sort">
+                <option value="title_asc" <?php echo ($_GET['sort'] ?? '') === 'title_asc' ? 'selected' : ''; ?>>Title (A-Z)</option>
+                <option value="rating_asc" <?php echo ($_GET['sort'] ?? '') === 'rating_asc' ? 'selected' : ''; ?>>Rating (Low to High)</option>
+                <option value="rating_desc" <?php echo ($_GET['sort'] ?? '') === 'rating_desc' ? 'selected' : ''; ?>>Rating (High to Low)</option>
+              </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Apply Filters</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <div class="row justify-content-center">  
   <?php 
