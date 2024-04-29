@@ -164,36 +164,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')   // GET
         <button class="btn btn-primary btn-sm" type="submit">Sort</button>
       </div>
   </form>
-  <label for="filter" style="margin-left:5px;">Filtering Options:</label>
-  <button type="button" class="btn btn-primary" style="margin-left:10px; margin-right:5px; margin-bottom:20px;" data-toggle="modal" data-target="#filterModal">
-    Filter
-  </button>
-
-  <div class="modal fade" id="filterModal" tabindex="-1" role="dialog" aria-labelledby="filterModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="filterModalLabel">Filter Options</h5>
-          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <form action="" method="GET">
-            <div class="form-group">
-              <label for="sort">Sort by:</label>
-              <select class="form-control" name="sort" id="sort">
-                <option value="title_asc" <?php echo ($_GET['sort'] ?? '') === 'title_asc' ? 'selected' : ''; ?>>Title (A-Z)</option>
-                <option value="rating_asc" <?php echo ($_GET['sort'] ?? '') === 'rating_asc' ? 'selected' : ''; ?>>Rating (Low to High)</option>
-                <option value="rating_desc" <?php echo ($_GET['sort'] ?? '') === 'rating_desc' ? 'selected' : ''; ?>>Rating (High to Low)</option>
-              </select>
-            </div>
-            <button type="submit" class="btn btn-primary mt-3">Apply Filters</button>
-          </form>
-        </div>
-      </div>
-    </div>
-  </div>
 
   <div class="row justify-content-center">  
   <?php 
