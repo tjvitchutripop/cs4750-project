@@ -261,6 +261,55 @@ function getBookReads($isbn13)
    return $result;
 }
 
+function addLikeToReview($user_id, $review_id) {
+   global $db;
+   $query = "INSERT INTO Likes (user_id, review_id) 
+   VALUES (:user_id, :review_id)";
+
+   try {
+      // $db->beginTransaction();
+      $statement = $db->prepare($query);
+
+      $statement->bindValue(':user_id', $user_id, PDO::PARAM_INT); 
+      $statement->bindValue(':review_id', $review_id);
+
+      $statement->execute();
+      $statement->closeCursor();
+      return true;
+   } catch (PDOException $e) {
+      // $db->rollback(); // Rollback transaction on failure
+      $error_message = $e->getMessage();
+      echo "<p>Error inserting user into database: $error_message </p>";
+      return false; // Return false to indicate failure
+      // $error_message = $e->getMessage();
+      // echo "<p>Error inserting user into database: $error_message </p>";
+   }
+}
+
+function addLike($review_id) {
+   global $db;
+   $query = "UPDATE Reviews SET likes = likes + 1 WHERE review_id =:review_id;";
+
+   $statement = $db->prepare($query); 
+   $statement->bindValue(':review_id', $review_id);
+   $statement->execute();
+
+   return $statement->rowCount() > 0;
+}
+
+function getNumLikes($review_id) {
+   global $db;
+   $query = "SELECT COUNT(likes) FROM Likes WHERE review_id =:review_id;";
+
+   $statement = $db->prepare($query); 
+   $statement->bindValue(':review_id', $review_id);
+   $statement->execute();
+   $result = $statement->fetch();
+   $statement->closeCursor();
+
+   return $result;
+}
+
 function addUser($firstName, $lastName, $userId, $password) {
    global $db;
    $query = "INSERT INTO User (user_id, user_password, profile_picture, first_name, last_name, admin) 
