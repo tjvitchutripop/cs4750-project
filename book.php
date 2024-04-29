@@ -32,7 +32,7 @@ if(isset($_POST['isbn13_to_add']) && isset($_SESSION['userId']) && isset($_POST[
 <?php include("header.php"); ?>
 <!-- sample add button, need to modify -->
 <!-- sample add button -->
-<div style="margin-left: 80px;margin-right: 80px;margin-top: 80px;">
+<div style="margin-left: 80px;margin-right: 80px;margin-top: 120px;">
 <div class="row">
     <div class="col-sm-3">
         <img src="<?php echo $book["Thumbnail"]; ?>" style="width:15vw;"></img>

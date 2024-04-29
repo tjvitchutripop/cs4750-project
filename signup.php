@@ -24,7 +24,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>SIGNUP</title>
+  <title>Liteary Loop | Sign Up</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
     integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
   <link rel="stylesheet" href="styles/main.css">
@@ -45,15 +45,16 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
   </style>
 </head>
-<body>
-<h1>hi</h1>
+<!-- Add header -->
+<?php include("header.php"); ?>
+<body style="margin-top:100px">
 <div class = "container">
   <!-- Sign up section -->
   
   <section>
-    <div class="py-5 text-center">
-            <h2>Sign up</h2>
-            <p>Fill out your information to make an account.</p>
+    <div class="mt-5 text-left">
+            <h2>Create Your Account</h2>
+            <p> Get ready to join a global community of avid readers ✨</p>
         </div>
 
         <!-- FOR ERROR MESSAGE DISPLAYING -->
@@ -91,7 +92,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             <label for="confirm_password">Confirm Password</label>
             <input type="password" class="form-control" name="confirm_password" placeholder="Confirm password" required> 
           </div>
-          <button type="submit" class="btn btn-primary">Sign up</button>
+          <button type="submit" class="btn btn-primary mt-3">Sign up</button>
         </form>
 
       </div>

@@ -26,6 +26,8 @@ if (!isset($_SESSION['userId'])) {
             <li class="nav-item">                  
               <a class="nav-link" href="account.php"> <?php echo $userDisplay; ?></a>
             </li>
+            <li class="nav-item">
+              <a class="nav-link" href="logout.php">Log Out</a>
           <?php } ?>
         </ul>
       </div>

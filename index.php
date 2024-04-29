@@ -164,13 +164,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')   // GET
         <button class="btn btn-primary btn-sm" type="submit">Sort</button>
       </div>
   </form>
-
-  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#filterModal">
+  <label for="filter" style="margin-left:5px;">Filtering Options:</label>
+  <button type="button" class="btn btn-primary" style="margin-left:10px; margin-right:5px; margin-bottom:20px;" data-toggle="modal" data-target="#filterModal">
     Filter
   </button>
 
   <div class="modal fade" id="filterModal" tabindex="-1" role="dialog" aria-labelledby="filterModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog modal-dialog-centered" role="document">
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title" id="filterModalLabel">Filter Options</h5>
@@ -188,7 +188,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')   // GET
                 <option value="rating_desc" <?php echo ($_GET['sort'] ?? '') === 'rating_desc' ? 'selected' : ''; ?>>Rating (High to Low)</option>
               </select>
             </div>
-            <button type="submit" class="btn btn-primary">Apply Filters</button>
+            <button type="submit" class="btn btn-primary mt-3">Apply Filters</button>
           </form>
         </div>
       </div>
