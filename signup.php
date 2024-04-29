@@ -10,7 +10,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $_SESSION['errorMessage'][] = "User ID must be a 9-digit number.";
 
     }  elseif ($_POST['password'] !== $_POST['confirm_password']) {
-        echo "Passwords do not match.";
+        // echo "Passwords do not match.";
+        $_SESSION['errorMessage'][] = "Passwords do not match.";
     } else {
       $userAdded = addUser($_POST['first_name'], $_POST['last_name'], $_POST['userId'], $_POST['password']);
       header("Location: index.php");  // Redirect to success page if user is added
